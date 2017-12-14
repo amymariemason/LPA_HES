@@ -1,0 +1,22 @@
+
+
+```{r echo=FALSE, results='asis',message=FALSE, warning=FALSE}
+load("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/500k/results.RData")
+
+input <- data.frame(
+  name = sapply(list_save, "[[", 2),
+ # units = sapply(list_save, "[[", 3),
+  stringsAsFactors = FALSE
+  )
+
+current <- input[i, ]
+  mr_input<-list_save[[i]][[3]]
+  #header
+  cat("###",current, "\n\n")
+  cat("Results of ", current, "\n")
+```
+
+
+```{r echo=FALSE, warning=FALSE, plotly=TRUE, message=FALSE, warning=FALSE}
+mr_plot(mr_input)
+```
