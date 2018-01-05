@@ -57,3 +57,6 @@ message(paste("Step 2 finished run on ", format(Sys.time(), "%a %b %d %X %Y")), 
 sink(type=c("message"))
 close(log_error)
 assertthat::assert_that(sink.number(type="message")==2,msg="warning: sink not closed")
+
+
+

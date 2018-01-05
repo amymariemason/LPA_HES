@@ -24,8 +24,10 @@ setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress")
 pcs  = read.table("Eur_QCp_PCs.txt", header=TRUE) 
 # list of samples which are unrelated to each other (2 columns = copies of IDS, missing =0, toIncl=0)
 sampleHRC = read.table("./500k/ukb_imp_genID.sample", stringsAsFactors=FALSE, header=TRUE) 
+# below file shows who to remove to exclude nonEuropeans or ppl who failed Quality Control
 excludefiles<- read.table("./500k/toExcl_Imp_nonEur_or_QCf.txt", stringsAsFactors=FALSE, header=FALSE, sep="") 
-
+# this file shows who to include to remove related europeans
+excludefiles2<-read.table("./500k/QCd_Eur_unrelated.txt", stringsAsFactors=FALSE, header=FALSE, sep="") 
 
 
 # create ordered list of the principle components
@@ -53,13 +55,22 @@ samplepheno = samplelink[whichlink,2]
 sampleHRC_pheno = sampleHRC_PC
 sampleHRC_pheno[2:(dim(sampleHRC_PC)[1]), 1] = samplepheno
 
+# create joint exclusion list
+excludefiles2$V2<-excludefiles2$V1
+trueexcludefiles = rbind(excludefiles, excludefiles2)
 
+# check no duplicates in the exclusion list
+assertthat::assert_that(nrow(unique(trueexcludefiles))==nrow(trueexcludefiles))
+
+# export exclusion list
+write.table(trueexcludefiles, "500k/Outputs/TO_EXCL_QCd_Eur_unrelated.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)
+
+# NOTE: some of the excluded samples have PCs now - be sure to use the right exclusion files
 # check that only excluded IDs lack PCs
 whichexclude=which(sampleHRC_PC[,1]%in%excludefiles[,1])
-
 assertthat::assert_that(sum(is.na(sampleHRC_pheno[whichexclude,"PC1"]))==length(sampleHRC_pheno[whichexclude,"PC1"]),
                         msg= "Incorrect number of null values - check merge have worked correctly")
 
 #
 
-write.table(sampleHRC_pheno, "AdiposityID_sampleset", row.names=FALSE, quote=FALSE)
+write.table(sampleHRC_pheno, "500k/Outputs/AdiposityID_sampleset", row.names=FALSE, quote=FALSE)
