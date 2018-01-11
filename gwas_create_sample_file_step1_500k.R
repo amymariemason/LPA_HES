@@ -12,7 +12,8 @@ rm(list=ls())
 #setwd("C:/Dropbox/Dropbox Current/Dropbox/lpamaster/gwas/")
 #setwd("C://Users/am2609/Dropbox (Personal)/lpamaster/gwas/")
 #warninsetwd("C://Users/am2609/Programs/GWAS_inprogress")
-setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress")
+setwd("D:/CurrentWork")
+#setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress")
 
 
 ########
@@ -24,11 +25,15 @@ setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress")
 pcs  = read.table("Eur_QCp_PCs.txt", header=TRUE) 
 # list of samples which are unrelated to each other (2 columns = copies of IDS, missing =0, toIncl=0)
 sampleHRC = read.table("./500k/ukb_imp_genID.sample", stringsAsFactors=FALSE, header=TRUE) 
-# below file shows who to remove to exclude nonEuropeans or ppl who failed Quality Control
-excludefiles<- read.table("./500k/toExcl_Imp_nonEur_or_QCf.txt", stringsAsFactors=FALSE, header=FALSE, sep="") 
+# below file shows who to remove to exclude nonEuropeans or ppl who failed Quality Control 
+#excludefiles<- read.table("./500k/toExcl_Imp_nonEur_or_QCf.txt", stringsAsFactors=FALSE, header=FALSE, sep="") 
 # this file shows who to include to remove related europeans
-excludefiles2<-read.table("./500k/QCd_Eur_unrelated.txt", stringsAsFactors=FALSE, header=FALSE, sep="") 
+excludefiles2<-read.table("./500k/QCed_Eur_unrelated.txt") 
+# link adiposity to biobank
+samplelink  = read.table("sampleID_map.txt", stringsAsFactors=FALSE, header=TRUE) # link adiposity to biobank
 
+
+# CREATE BLANK SAMPLE FILE
 
 # create ordered list of the principle components
 whichlink2 = which(pcs[,1]%in%sampleHRC[,1])
@@ -41,8 +46,6 @@ sampleHRC_PC<-merge(sampleHRC[,1:3], pcs_1, by.x="ID_1", by.y="FID", all.x = TRU
 sampleHRC_PC[1, c("PC1","PC2","PC3","PC4","PC5", "PC6", "PC7", "PC8", "PC9", "PC10")] <- rep("C", 10)
 
 
-# link adiposity to biobank
-samplelink  = read.table("sampleID_map.txt", stringsAsFactors=FALSE, header=TRUE) # link adiposity to biobank
 
 
 #creates a list of the adiposity sample IDS
@@ -55,22 +58,15 @@ samplepheno = samplelink[whichlink,2]
 sampleHRC_pheno = sampleHRC_PC
 sampleHRC_pheno[2:(dim(sampleHRC_PC)[1]), 1] = samplepheno
 
-# create joint exclusion list
-excludefiles2$V2<-excludefiles2$V1
-trueexcludefiles = rbind(excludefiles, excludefiles2)
-
-# check no duplicates in the exclusion list
-assertthat::assert_that(nrow(unique(trueexcludefiles))==nrow(trueexcludefiles))
-
-# export exclusion list
-write.table(trueexcludefiles, "500k/Outputs/TO_EXCL_QCd_Eur_unrelated.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)
-
-# NOTE: some of the excluded samples have PCs now - be sure to use the right exclusion files
+# create exclusion list
 # check that only excluded IDs lack PCs
-whichexclude=which(sampleHRC_PC[,1]%in%excludefiles[,1])
-assertthat::assert_that(sum(is.na(sampleHRC_pheno[whichexclude,"PC1"]))==length(sampleHRC_pheno[whichexclude,"PC1"]),
-                        msg= "Incorrect number of null values - check merge have worked correctly")
+sampleHRC_PC$exclude<-!(sampleHRC_PC[,1]%in%excludefiles2[,1])
+sampleHRC_PC$missing<-is.na(sampleHRC_PC$PC1)
+sampleHRC_PC$error_check<- ifelse(sampleHRC_PC$exclude==FALSE&sampleHRC_PC$missing==TRUE,1,0)
+assertthat::assert_that(nrow(sampleHRC_PC[sampleHRC_PC$error_check==1,])==0)
 
+exclusionlist<-sampleHRC_PC[sampleHRC_PC$exclude==TRUE,]$ID_1
+write.table(sampleHRC_PC, "500k/Outputs/exclusion_list.txt", row.names=FALSE, quote=FALSE)
 #
 
 write.table(sampleHRC_pheno, "500k/Outputs/AdiposityID_sampleset", row.names=FALSE, quote=FALSE)

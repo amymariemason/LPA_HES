@@ -29,7 +29,7 @@ library(pander)
 ```
 
 ```{r echo=FALSE, include=TRUE, results='asis'}
-load("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/500k/results.RData")
+load("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/500k/Outputs/results.RData")
 
 input <- data.frame(
   name = sapply(list_save, "[[", 2),
@@ -45,7 +45,7 @@ for(i in seq(nrow(input))){
  keep[i, "estimate"]<- (list_save[[i]][[4]])@Estimate
  Up<-formatC(list_save[[i]][[4]]@CIUpper, format = "e", digits = 2)
 Low<-formatC(list_save[[i]][[4]]@CILower, format = "e", digits = 2)
- keep[i, "95% CI"]<- paste("(",Up, ", ", Low, ")", sep="")
+ keep[i, "95% CI"]<- paste("(",Low, ", ", Up, ")", sep="")
  keep[i, "pvalue"]<- (list_save[[i]][[4]])@Pvalue
 
  

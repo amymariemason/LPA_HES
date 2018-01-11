@@ -11,11 +11,12 @@
 # libraries and setup
 rm(list=ls())
 #setwd("C://Users/am2609/Programs/GWAS_inprogress")
-setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress")
+setwd("D:/CurrentWork")
+#setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress")
 
 
 
-# load adiposity ID sample list
+# load adiposity ID sample list from Step 1
 
 sample_all = read.table("AdiposityID_sampleset", header = TRUE)
 

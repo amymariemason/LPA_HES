@@ -15,6 +15,13 @@
 . /etc/profile.d/modules.sh
 module load snptest
 
+module load gcc/5.2.0
+module load qctool2
+
+qctool -g /scratch/curated_genetic_data/uk_biobank/imputed/full_release/HRC_subset/ukb_imp_chr6_HRConly.bgen \
+-og /scratch/am2609/Gwas/lpa_snps.bgen -incl-positions /scratch/am2609/Gwas/lpa_vars.txt
+
+
 for output in isch_comb pad_comb sah_comb ich_comb haem_comb
 do
 echo $output
