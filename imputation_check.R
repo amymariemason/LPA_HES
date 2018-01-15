@@ -143,15 +143,34 @@ within(stats_sub[stats_sub$duplicate==1,], rm("duplicate") )
 # investigate impute_info
 ###########################################################
 
-write.table(stats_sub, "500k/Outputs/impute_stats", row.names=FALSE, quote=FALSE)
-
+write.table(stats_sub, paste0(output_dir, "/impute_stats"), row.names=FALSE, quote=FALSE)
 summary(stats_sub$impute_info)
+
+# set acceptable thresholds for imputation quality
+rare<-0.9
+lowfreq<-0.9
+common<-0.6
         
-message("these snps have impute values <0.9")
-stats_sub[stats_sub$impute_info<0.9, c("rsid","chr","pos")]
+message(paste0("these rare snps have impute values <", rare, " & Allele B frequencies <1%"))
+stats_sub$threshold1<-ifelse(stats_sub$impute_info<rare & stats_sub$alleleB_frequency<0.01, 1,0)
+stats_sub[stats_sub$threshold1==1, c("rsid","chromosome","position", "alleleA","alleleB")]
+
+message(paste0("these low frequency snps have impute values <", lowfreq, " & Allele B frequencies 1%<= x <5%"))
+stats_sub$threshold2<-ifelse(stats_sub$impute_info<rare & stats_sub$alleleB_frequency>=0.01 & stats_sub$alleleB_frequency<0.05 , 1,0)
+stats_sub[stats_sub$threshold2==1,  c("rsid","chromosome","position", "alleleA","alleleB")]
+
+message(paste0("these common snps have impute values <", common,"  & Allele B frequencies >5%"))
+stats_sub$threshold3<-ifelse(stats_sub$impute_info<common & stats_sub$alleleB_frequency>=0.05, 1,0)
+stats_sub[stats_sub$threshold3==1,  c("rsid","chromosome","position", "alleleA","alleleB")]
+
+stats_sub$QCfail<- stats_sub$threshold3 + stats_sub$threshold2 +stats_sub$threshold1
+
+# save table into folder
+write.table(stats_sub, paste0(output_dir, "/impute_stats"), row.names=FALSE, quote=FALSE)
 
 ################################################################
 # random sampling of impute info
+################################################################
 
 
 # imports data into blank file, reports missing data in list
@@ -202,7 +221,6 @@ summary(sample[[1]]$impute_info)
 hist(sample[[1]]$impute_info, nclass=20)
 boxplot(sample[[1]]$impute_info)
 
-# save graph 
 
 
 
@@ -210,4 +228,4 @@ boxplot(sample[[1]]$impute_info)
 #
 ###########################################################################
 
- 
+ setwd(code_dir)

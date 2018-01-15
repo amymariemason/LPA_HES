@@ -31,9 +31,9 @@
 # clear workspace
 rm(list=ls())
 
-# set working directory
-# this should be the director containing the step1 etc programs
-setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/500k/LPA_HES/")
+# set home
+# this should be the director containing the step1 etc
+setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Code/")
 
 # set log file 
 #errors and warning produced by each step will be logged to this file
@@ -53,6 +53,9 @@ assertthat::assert_that(sink.number(type="message")==2,msg="warning: sink not cl
 # set input directories
 ##########################################################################
 
+#
+code_dir<-getwd()
+
 # this is the directory containing inputs/output/biobank input folders
 home_dir<- "//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress"
 
@@ -65,6 +68,8 @@ output_dir<-paste0(home_dir, "/Outputs/")
 
 #inputs file
 inputs_dir<-paste0(home_dir, "/Inputs/")
+
+
 
 
 
