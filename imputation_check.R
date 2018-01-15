@@ -30,17 +30,10 @@ setwd(home_dir)
 statsfile<-paste0(inputs_dir, "ukb_imp_chr6_HRCvars_EURsamples_snpstats.txt")
 
 # snps to scan for 
-snplist<-read.table(paste0(inputs_dir, "lpa_snps.txt"), header=TRUE)
+snplist<-read.table(paste0(output_dir, "Cardiogram_C4D_snp"), header=TRUE)
 
 # NOTE TO AMY: this could be improved to search through relevant statsfiles based on snp input file
 
-
-####################################
-#variant input
-####################################
-
-#check format
-var43<-snplist$variantID
 
 ##########################################
 # Functions
@@ -124,7 +117,7 @@ return(outlist)
 ####################################################################
 
 # subset the data
-try<-import_data(statsfile, inputname="position", snplist, varname="pos")
+try<-import_data(statsfile, inputname="position", snplist, varname="bp_hg19")
 
 stats_sub<-try[[1]]
 
