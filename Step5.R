@@ -29,6 +29,7 @@ library(stringr)
 
 X_associations<-X_associations
 # format should be:  c("variantID", "snp", "chr.pos", "chr", "pos" , "a1", "a2", "beta", "se")]
+# program will reorder 
 corr<- corr
 # format should be: correlation matrix with variantID values as row.names
 
@@ -80,9 +81,13 @@ for (i in 1:length(TL)){
   names(outcome)<-c("chr","pos","A1","A2", "outcomeBeta", "outcomeSE")
   outcome$chr<-as.character(outcome$chr)
   outcome$pos<-as.character(outcome$pos)
-
+  
+  # create reversed data set for directional realignment
+  X_associations_rev<-X_associations
+  X_associations_rev$beta<-(-1)*as.numeric(X_associations_rev$beta)
+  
   # subset X-outcome data to those variants in the Y-outcome dataset
-  outcomeA<-merge(outcome, X_associations, by.x=c("chr","pos","A1","A2"), by.y=c("chr", "pos", "a2", "a1"))
+  outcomeA<-merge(outcome, X_associations_rev, by.x=c("chr","pos","A1","A2"), by.y=c("chr", "pos", "a2", "a1"))
   outcomeB<-merge(outcome, X_associations, by.x=c("chr","pos","A1","A2"), by.y=c("chr", "pos", "a1", "a2"))
   outcome2<-rbind(outcomeA, outcomeB)
   outcome3<-na.omit(outcome2)
