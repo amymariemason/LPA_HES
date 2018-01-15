@@ -7,35 +7,30 @@
 # Outputs: log file reporting missing variants, dataframe containing the subset of larger data matching results for the variants given
 ######
 
+# add: check HWE; check imputations vs genotype?
+
 ######################################
 # setup desktop
 ######################################
-
-# clean workspace
-rm(list = ls())
-
 # libraries
-library(data.table)
-
-
-
+require(data.table)
 
 ####################################
 # Set folders 
 ####################################
 
 #working directory
-setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress")
+setwd(home_dir)
 
 ##################################
 #data input
 ##################################
 
 # stats file to be scanned
-statsfile<-"500k/Inputs/ukb_imp_chr6_HRCvars_EURsamples_snpstats.txt"
+statsfile<-paste0(inputs_dir, "ukb_imp_chr6_HRCvars_EURsamples_snpstats.txt")
 
 # snps to scan for 
-snplist<-read.table("./500k/Outputs/lpa_snps.txt", header=TRUE)
+snplist<-read.table(paste0(inputs_dir, "lpa_snps.txt"), header=TRUE)
 
 # NOTE TO AMY: this could be improved to search through relevant statsfiles based on snp input file
 
@@ -125,7 +120,7 @@ return(outlist)
 }
 
 ####################################################################
-#code
+# create subset of snps of interest
 ####################################################################
 
 # subset the data
@@ -206,5 +201,13 @@ sample<-random_data(inputfile, iterate=1000, max_start= 2460183)
 summary(sample[[1]]$impute_info)
 hist(sample[[1]]$impute_info, nclass=20)
 boxplot(sample[[1]]$impute_info)
+
+# save graph 
+
+
+
+###########################################################################
+#
+###########################################################################
 
  

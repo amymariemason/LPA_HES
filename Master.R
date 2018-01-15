@@ -24,6 +24,7 @@
 #
 ######
 
+######################################################################
 # prepare workspace: 
 ###########################################################################
 
@@ -32,7 +33,7 @@ rm(list=ls())
 
 # set working directory
 # this should be the director containing the step1 etc programs
-setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress")
+setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/500k/LPA_HES/")
 
 # set log file 
 #errors and warning produced by each step will be logged to this file
@@ -48,7 +49,24 @@ close(log_error)
 # check log has correctly closed
 assertthat::assert_that(sink.number(type="message")==2,msg="warning: sink not closed")
 
-# might be nice to add report to this
+##########################################################################
+# set input directories
+##########################################################################
+
+# this is the directory containing inputs/output/biobank input folders
+home_dir<- "//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress"
+
+# this is the directory containing the Biobank source files for step1
+### if running on cardio, symbolic links to these files can be found in 
+BB_dir<-paste0(home_dir, "/BB_inputs/")
+
+# output file
+output_dir<-paste0(home_dir, "/Outputs/")
+
+#inputs file
+inputs_dir<-paste0(home_dir, "/Inputs/")
+
+
 
 ##########################################################################
 # Prep Step 1: Check imputation quality of snps
@@ -79,7 +97,7 @@ close(log_error)
 # check log has correctly closed
 assertthat::assert_that(sink.number(type="message")==2,msg="warning: sink not closed")
 
-
+# might be nice to add report to this
 
 
 ###########################################################################
