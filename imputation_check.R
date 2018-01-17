@@ -30,7 +30,7 @@ setwd(home_dir)
 statsfile<-paste0(inputs_dir, "ukb_imp_chr6_HRCvars_EURsamples_snpstats.txt")
 
 # snps to scan for 
-snplist<-read.table(paste0(output_dir, "Cardiogram_C4D_snp"), header=TRUE)
+snplist<-as.data.frame(read.table(paste0(output_dir, "Cardiogram_C4D_snp"), header=TRUE))
 
 # NOTE TO AMY: this could be improved to search through relevant statsfiles based on snp input file
 
