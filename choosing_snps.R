@@ -93,15 +93,16 @@ lpa <- read.table("//me-filer1/home$/am2609/My Documents/Blood Cell Traits Data/
 
 # subset C4D data to that which overlaps with lpa
 
-try<-import_data(CD4, inputname="bp_hg19", lpa, varname="pos")
+try<-import_data(CD4, inputname="bp_hg19", lpa, varname="pos") #to subset by cardio
 keep<-as.data.frame(try[[1]])
 message(nrow(keep), " variants in Cardiogram+C4D and lpa var list")
 
 # subset UKBB to the overlap with try
 
-try2<- import_data(statsfile, inputname="position", keep, varname="bp_hg19")
-keep<-try2[[1]]
-message(nrow(keep), " variants in UKBioBank & Cardiogram+C4D and lpa var list")
+#try2<- import_data(statsfile, inputname="position", keep, varname="bp_hg19")  # to do UKBB and Cardio
+#try2<- import_data(statsfile, inputname="position", lpa, varname="pos") # to do UKBB
+#keep<-try2[[1]]
+#message(nrow(keep), " variants in UKBioBank & Cardiogram+C4D and lpa var list")
 
 # leaves 629 variants
 
@@ -154,7 +155,7 @@ QCVars<- write.table(Vars[Vars$QCfail==0,],file="//me-filer1/home$/am2609/My Doc
 # Do stepwise regression: setup
 ########################################################################
 
-Vars_ID<-Vars[Vars$QCfail==0, c("alternate_ids", "rsid", "chromosome", "position", "alleleA", "alleleB")]
+Vars_ID<-Vars[Vars$QCfail==0, c("variantID", "chromosome", "position", "alleleA", "alleleB")]
 
 # take LP(a) data
 
@@ -190,17 +191,17 @@ message(paste0(nrow(data)-nrow(data1), " participants CHD positive before start 
 data<-data1
 rm(data1)
 
-# make rsid values same format as data
-
-
-#whoops, some incorrect variants have slipped in (duplicates of position)
-
 # identify which columns relate to high quality imputation snps in UKbiobank
-whichcols<-which(names(data) %in% Vars_ID$ID)
+whichcols<-which(names(data) %in% Vars_ID$variantID)
+# check found all variants
+assertthat::assert_that(length(whichcols)==nrow(Vars_ID))
 
 # identify which covariates
+#NOTE: ln_lpa is not a log transformed variable
 cov<-c("ln_lpa", "ages", "sex", "cohort", "assay_method2", "assay_method3", "gpc_1", "gpc_2", "gpc_3", "gpc_4", "gpc_5")
 whichcov<-which(names(data) %in% cov)
+
+data_test<-data[,c(whichcov,whichcols)]
 
 # subset to that data (1:82 <- covariates)
 data_sub<-data[,c(whichcov, whichcols)]
@@ -321,9 +322,13 @@ ld <- function(x=x, c=c, nc=nc, r2=r2){
 # run functions
 ###########################################################################
 
+# find variant columns in data_sub
 
+# identify which columns relate to high quality imputation snps in UKbiobank
+whichcols2<-which(names(data_sub) %in% Vars_ID$variantID)
 
-g <- as.matrix(data_sub[,11:ncol(data_sub)])
+# turn those columns into a numeric matrix
+g <- as.matrix(data_sub[,whichcols2])
 class(g) <- "numeric"
 g <- as.data.frame(g)
 miss <- sapply(g, function(x)sum(is.na(x)))
@@ -335,12 +340,49 @@ x <- g
 c <- data_sub[, c("ages", "sex", "cohort", "assay_method2", "assay_method3", "gpc_1", "gpc_2", "gpc_3", "gpc_4", "gpc_5")]
 c$cohort <- factor(c$cohort)
 fstep <- fstepwisereg(y=y, x=x, c=c, r2=0.4)
-#save.image("../data/fstep.RData")
 
-
-
+# save selected snps
 snps_selected <- fstep$snps
 p <- fstep$p
 results <- data.frame(snps=snps_selected, p=p) 
 
-write.table(results, "lpa/data/fstep_snps_0.4_EUwinsor.txt", row.names=F, quote=F, sep="\t")
+#write.table(results, paste0(output_dir,"fstep_UKBB_Cardio.txt"), row.names=F, quote=F, sep="\t")
+write.table(results, paste0(output_dir,"fstep_UKBB.txt"), row.names=F, quote=F, sep="\t")
+####
+d = data[,snps_selected]
+d1 = as.numeric(d[,1])
+d2 = as.numeric(d[,2])
+d3 = as.numeric(d[,3])
+d4 = as.numeric(d[,4])
+d5 = as.numeric(d[,5])
+d6 = as.numeric(d[,6])
+d7 = as.numeric(d[,7])
+d8 = as.numeric(d[,8])
+d9 = as.numeric(d[,9])
+d10 = as.numeric(d[,10])
+d11 = as.numeric(d[,11])
+d12 = as.numeric(d[,12])
+d13 = as.numeric(d[,13])
+d14 = as.numeric(d[,14])
+d15 = as.numeric(d[,15])
+d16 = as.numeric(d[,16])
+d17 = as.numeric(d[,17])
+d18 = as.numeric(d[,18])
+d19 = as.numeric(d[,19])
+d20 = as.numeric(d[,20])
+d21 = as.numeric(d[,21])
+d22 = as.numeric(d[,22])
+d23 = as.numeric(d[,23])
+d24 = as.numeric(d[,24])
+d25 = as.numeric(d[,25])
+d26 = as.numeric(d[,26])
+d27 = as.numeric(d[,27])
+
+model.condall <- summary(lm(y ~ . + d1 + d2 + d3 + d4 + d5 + d6 + d7 + d8 + d9 + d10 + d11 + d12 +
+                              d13 + d14 + d15 + d16 + d17 + d18 + d19 + d20 + d21 + d22 + d23 + d24 + d25 + d26 + d27 , data=c))
+
+for (j in 1:26) {
+  cat(snps_selected[j], " & ", format(c(round(model.condall$coef[33+j,1],1),-11.1))[1], " (",
+      format(c(round(model.condall$coef[33+j,2], 1), 1.1))[1], ") \n", sep="")
+}
+

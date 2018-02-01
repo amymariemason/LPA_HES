@@ -52,7 +52,7 @@ output<- output[0,]
 return(output)
 }
 
-create_missing_report<-function(varlist, varname){
+create_missing_report<-function(varlist, varname=names(varlist)[[1]]){
   missinglist<-as.data.frame(varlist[,varname])
   names(missinglist)<-varname
   missinglist$missing<-rep(0, nrow(missinglist)) 
@@ -60,18 +60,42 @@ create_missing_report<-function(varlist, varname){
 }
 
 
+# this changes the proposed column types by fread by overriding them
+# varlist = empty file created for the variant data
+# varname = vector of variables for which you wish to change class; selects all if not specifies
+# coltype = vector of new classes; by default this overrides into character
+
+change_col_character<-function(varlist, varchange=names(varlist), coltype=rep("character", length(varchange))) {
+  current<- sapply(varlist, class)
+  whichcols<-which(colnames(varlist)%in%varchange)
+  current[whichcols]<-coltype
+  return(current)
+}
+
+
 # imports data into blank file, reports missing data in list
-import_data<-function(inputfile, inputname, varlist, varname=names(varlist)[[1]], maxdup=5){
+import_data<-function(inputfile, inputname, varlist, varname=names(varlist)[[1]], maxdup=5, col_change=FALSE, ...){
   #inputfile = file to subset
   #inputname = variable in input file to search for variable
   #varlist = file containing variables to search for
   # (varname) = variable to search; defaults to first column of varlist
+  # col_change = TRUE -> changes variable types to character
+  #... added to allow you to pass
+    #varchange = vector of variable names to restrict col_change to
+    #coltype = vector of classes to change the column to, 
+        # adding coltype will impose those classes as long as they are not more restrictive than the default
+      # see fread for more details on colClasses
   # (maxdup) = maximum number of duplications to search for; default = 5
-
+  
 # create blank report files
 missingreport<-create_missing_report(varlist,varname)
 output<-create_blank_file(inputfile)  
 num_er=0 # number of errors reported
+
+# changes character types if needed
+class_change <- sapply(output,class)
+if(col_change==TRUE){
+  class_change<-change_col_character(output,varchange, coltype)}
   
 # loop to read in data from outside file; assigned as missing added to output file
 num_er =0 # error counter
@@ -83,7 +107,7 @@ for (j in varlist[,varname]){
   # test if input exists for this value; reports error if missing
   test <- tryCatch(
     # this is what I want it to do:  
-    fread(file=inputfile,nrows=maxdup, skip=as.character(j))
+    fread(file=inputfile,nrows=maxdup, skip=as.character(j), colClasses=class_change)
     ,
     # if error occurs
     error=function(error_message) {
