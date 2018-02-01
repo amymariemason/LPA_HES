@@ -7,7 +7,7 @@
 # link adiposity to biobank file (sampleID_map)
 # sample file of everyone in biobank (ukb_imp_genID.sample)
 # Outputs: "AdiposityID_sampleset" sample file, empty of outcomes 
-###### HELLO AMY what am I doing?
+######
 
 ########################################################################
 # Desktop setup
