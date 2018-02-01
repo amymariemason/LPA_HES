@@ -74,18 +74,19 @@ change_col_character<-function(varlist, varchange=names(varlist), coltype=rep("c
 
 
 # imports data into blank file, reports missing data in list
-import_data<-function(inputfile, inputname, varlist, varname=names(varlist)[[1]], maxdup=5, col_change=FALSE, ...){
+import_data<-function(inputfile, inputname, varlist, varname=names(varlist)[[1]], maxdup=5, col_change=FALSE, varchange=NULL, coltype=NULL){
   #inputfile = file to subset
   #inputname = variable in input file to search for variable
   #varlist = file containing variables to search for
   # (varname) = variable to search; defaults to first column of varlist
   # col_change = TRUE -> changes variable types to character
-  #... added to allow you to pass
-    #varchange = vector of variable names to restrict col_change to
-    #coltype = vector of classes to change the column to, 
+    #varchange = vector of variable names to restrict col_change to; default is NULL
+    #coltype = vector of classes to change the column to; default is NULL
+  
         # adding coltype will impose those classes as long as they are not more restrictive than the default
       # see fread for more details on colClasses
-  # (maxdup) = maximum number of duplications to search for; default = 5
+  # (maxdup) = maximum number of duplications to search for; default = 5; if some allele identifying as logical instead of character
+    # try increase max dup or use col_change to hard set  
   
 # create blank report files
 missingreport<-create_missing_report(varlist,varname)
@@ -93,9 +94,11 @@ output<-create_blank_file(inputfile)
 num_er=0 # number of errors reported
 
 # changes character types if needed
-class_change <- sapply(output,class)
+char_read<-fread(file=inputfile,nrows=1)
+class_change <- sapply(char_read,class)
 if(col_change==TRUE){
-  class_change<-change_col_character(output,varchange, coltype)}
+  class_change<-change_col_character(char_read,varchange, coltype)}
+names(class_change)<-NULL
   
 # loop to read in data from outside file; assigned as missing added to output file
 num_er =0 # error counter
