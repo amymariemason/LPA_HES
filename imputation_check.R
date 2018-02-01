@@ -8,11 +8,13 @@
 ######
 
 # add: check HWE; check imputations vs genotype?
+#I have added additional comments and have included a loop round the chromosomes. 
 
 ######################################
 # setup desktop
 ######################################
 # libraries
+rm(list=ls())
 require(data.table)
 
 ####################################
@@ -21,18 +23,6 @@ require(data.table)
 
 #working directory
 setwd(home_dir)
-
-##################################
-#data input
-##################################
-
-# stats file to be scanned
-statsfile<-paste0(inputs_dir, "ukb_imp_chr6_HRCvars_EURsamples_snpstats.txt")
-
-# snps to scan for 
-snplist<-as.data.frame(read.table(paste0(output_dir, "Cardiogram_C4D_snp"), header=TRUE))
-
-# NOTE TO AMY: this could be improved to search through relevant statsfiles based on snp input file
 
 
 ##########################################
@@ -44,7 +34,8 @@ snplist<-as.data.frame(read.table(paste0(output_dir, "Cardiogram_C4D_snp"), head
 
 create_blank_file<- function(inputfile){
 
-# create empty data frame for variant data; includes duplicate reporting
+#create empty data frame for variant data; includes the column headings from inputfile and an additional column
+#called 'duplicate'
 output<-fread(file=inputfile,nrows=1)
 output$duplicate<-0
 output<- output[0,]
@@ -52,6 +43,9 @@ output<- output[0,]
 return(output)
 }
 
+#This function creates a data frame with the variable 'varname' from varlist - this will be 'pos' from snplist 
+#in our example. It also adds an additional column called 'missing' where each variant has a value of zero. 
+#Hence, will provide information on variants that are in snplist but do not appear in the statsfile.  
 create_missing_report<-function(varlist, varname){
   missinglist<-as.data.frame(varlist[,varname])
   names(missinglist)<-varname
@@ -66,14 +60,19 @@ import_data<-function(inputfile, inputname, varlist, varname=names(varlist)[[1]]
   #inputname = variable in input file to search for variable
   #varlist = file containing variables to search for
   # (varname) = variable to search; defaults to first column of varlist
-  # (maxdup) = maximum number of duplications to search for; default = 5
+  # (maxdup) = maximum number of duplications to search for; default = 5. Duplications of the position number may 
+  #occur when there has been more than one mutation i.e. G to T and G to C etc.
 
 # create blank report files
 missingreport<-create_missing_report(varlist,varname)
 output<-create_blank_file(inputfile)  
 num_er=0 # number of errors reported
   
-# loop to read in data from outside file; assigned as missing added to output file
+# loop to read in data from outside file. The fread() function is used to check whether the variant in snplist is 
+#contained in the statsfile. To allow the code to run when the variant is missing, the tryCatch() function is used. 
+#One of two things will happen: a) it doesn't find "j", in which case it will report an error and the variant will be 
+#reported as missing; or b) if the variant is found then the fread() function will be executed and the data subseted
+#and saved as test.
 num_er =0 # error counter
 for (j in varlist[,varname]){
   # to watch progress
@@ -82,7 +81,9 @@ for (j in varlist[,varname]){
 #  if (exists("test")){rm(test)}
   # test if input exists for this value; reports error if missing
   test <- tryCatch(
-    # this is what I want it to do:  
+    # this is what I want it to do, i.e. search for position "j" and then extract maxdup rows (e.g. 5). fread() will
+    #only extract data for the first instance of this, hence we are assuming the position is in some numerical order
+    #as otherwise we may miss duplicate entires of the same variant.  
     fread(file=inputfile,nrows=maxdup, skip=as.character(j))
     ,
     # if error occurs
@@ -93,49 +94,82 @@ for (j in varlist[,varname]){
     }
   )
   # if error, report variant as not found
+  #Hence, if the variant is not found in the inputfile then report as missing by replacing with 1 
   if(is.character(test)){
+    #Look for j in the varname and replacing missing column with 1 if not there
     missingreport[grep(j, missingreport[, varname]),"missing"]<-1;
+    #If there the variant is not found then add onto the num_er object
     num_er <- num_er +1;
   }
   # if no error, add collected lines to file, reporting duplicate matches
   if(!(is.character(test))) {
     test$duplicate<-rep(0, nrow(test));
+    #Takes the col names from output (i.e. the input file) and puts the names onto test. This will only work if the
+    #variant has been found and the relevant row(s) has been extracted by the fread() function.
     names(test)<-names(output);
     test<-as.data.frame(test)
+    #Just taking out the entry/entries with the jth position
     testSubset <- test[grep(j, test[,inputname]), ];
-    #add warning for multiple matching rows			
+    #If there is more than one row for the position then replace the duplicate entry with a 1			
     if(nrow(testSubset)!=1) testSubset$duplicate<-rep(1, nrow(testSubset));
     output <- rbind(output, testSubset)
   }
 }  
+#Return the output, number of variants not found, and information on missing variants.
 outlist<-list(output, num_er, missingreport)
 return(outlist)
 }
+
+##################################
+#data input
+##################################
+
+#NOTE - statsfile is the document we want to subset and snplist represent the variants we want to select. Note that the 
+#statsfiles are saved for each chromosome, therefore we only want to search through the statsfiles that are relevant 
+#to that chromosome. Hence we want to loop through the datasets.  
+
+#Read in the variants we want to have information on and find out which statsfiles we need
+snps<-read.table("bmi_snps.txt", header=TRUE)
+chr<-snps$chr
+chr<-chr[!duplicated(chr)]
 
 ####################################################################
 # create subset of snps of interest
 ####################################################################
 
-# subset the data
-try<-import_data(statsfile, inputname="position", snplist, varname="bp_hg19")
+#Create blank data frame for the outcome data to be saved into: 
+stats_sub<-create_blank_file("ukb_imp_chr1_HRCvars_EURsamples_snpstats.txt")
 
-stats_sub<-try[[1]]
-
-missing<- try[[3]]
-# create report
-message(paste0("there were ", try[[2]], "variants not found"))
-
-message("These snps are missing")
-missing[missing$missing==1, !(colnames(missing)%in%c("missing")),drop=FALSE]
-
-message("these snps are duplicated ")
-within(stats_sub[stats_sub$duplicate==1,], rm("duplicate") )
+#Only import the relevant statfiles and loop round. We are selecting variables based on the 'position' variable 
+#in the statsfile. 
+for(i in chr){
+  statsfile<-paste0("ukb_imp_chr", i, "_HRCvars_EURsamples_snpstats.txt")
+  #Only want to consider the variants that are on the ith chromosome.  
+  snplist<-snps[snps$chr==i,]
+  try<-import_data(statsfile, inputname="position", snplist, varname="pos")
+  
+  #Since the output is stored as a list we need to extract the stats information as seperate data frames.  
+  stats_sub<-rbind(stats_sub,try[[1]])
+  #Information on variants that were not present in the stats file.  
+  missing<- try[[3]]
+  # create report on the number of missing variants 
+  message(paste0("there were ", try[[2]], "variants not found"))
+  message("These snps are missing")
+  missing[missing$missing==1, !(colnames(missing)%in%c("missing")),drop=FALSE]
+  
+  #Information on the number of duplicated variants.  
+  message("these snps are duplicated ")
+  within(stats_sub[stats_sub$duplicate==1,], rm("duplicate") )
+}
+summary(stats_sub$impute_info)
        
 
 ###########################################################
 # investigate impute_info
 ###########################################################
 
+#set acceptable thresholds for imputation quality - this is linked to the MAF, i.e. we would expect rarer variants 
+#to have poorer imputation quality.
 write.table(stats_sub, paste0(output_dir, "/impute_stats"), row.names=FALSE, quote=FALSE)
 summary(stats_sub$impute_info)
 
@@ -143,19 +177,23 @@ summary(stats_sub$impute_info)
 rare<-0.9
 lowfreq<-0.9
 common<-0.6
-        
+
+#Report the number of variants that have an impute quality<rare and MAF<1%        
 message(paste0("these rare snps have impute values <", rare, " & Allele B frequencies <1%"))
 stats_sub$threshold1<-ifelse(stats_sub$impute_info<rare & stats_sub$alleleB_frequency<0.01, 1,0)
 stats_sub[stats_sub$threshold1==1, c("rsid","chromosome","position", "alleleA","alleleB")]
 
+#Report the number of variants that have an impute quality<lowfreq and 1%<MAF<5%
 message(paste0("these low frequency snps have impute values <", lowfreq, " & Allele B frequencies 1%<= x <5%"))
 stats_sub$threshold2<-ifelse(stats_sub$impute_info<rare & stats_sub$alleleB_frequency>=0.01 & stats_sub$alleleB_frequency<0.05 , 1,0)
 stats_sub[stats_sub$threshold2==1,  c("rsid","chromosome","position", "alleleA","alleleB")]
 
+#Report the number of variants that have an impute quality<common and MAF>5%
 message(paste0("these common snps have impute values <", common,"  & Allele B frequencies >5%"))
 stats_sub$threshold3<-ifelse(stats_sub$impute_info<common & stats_sub$alleleB_frequency>=0.05, 1,0)
 stats_sub[stats_sub$threshold3==1,  c("rsid","chromosome","position", "alleleA","alleleB")]
 
+#Number of variants that do not satisfy these thresholds
 stats_sub$QCfail<- stats_sub$threshold3 + stats_sub$threshold2 +stats_sub$threshold1
 
 # save table into folder
