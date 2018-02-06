@@ -105,12 +105,14 @@ num_er =0 # error counter
 for (j in varlist[,varname]){
   # to watch progress
   print(j)
+  #add spaces to ensure exact match: Note this may still pull wrong line IF value matches another var
+  j1<- paste0(" ",j," ")
   # clear test dummy var
 #  if (exists("test")){rm(test)}
   # test if input exists for this value; reports error if missing
   test <- tryCatch(
     # this is what I want it to do:  
-    fread(file=inputfile,nrows=maxdup, skip=as.character(j), colClasses=class_change)
+    fread(file=inputfile,nrows=maxdup, skip=as.character(j1), colClasses=class_change)
     ,
     # if error occurs
     error=function(error_message) {
@@ -129,7 +131,7 @@ for (j in varlist[,varname]){
     test$duplicate<-rep(0, nrow(test));
     names(test)<-names(output);
     test<-as.data.frame(test)
-    testSubset <- test[grep(j, test[,inputname]), ];
+    testSubset<-test[which(test[,inputname] == j),]
     #add warning for multiple matching rows			
     if(nrow(testSubset)!=1) testSubset$duplicate<-rep(1, nrow(testSubset));
     output <- rbind(output, testSubset)
@@ -189,7 +191,6 @@ stats_sub$QCfail<- stats_sub$threshold3 + stats_sub$threshold2 +stats_sub$thresh
 write.table(stats_sub, paste0(output_dir, "/impute_stats"), row.names=FALSE, quote=FALSE)
 
 ################################################################
-# random sampling of impute info
 ################################################################
 
 
@@ -243,9 +244,3 @@ boxplot(sample[[1]]$impute_info)
 
 
 
-
-###########################################################################
-#
-###########################################################################
-
- setwd(code_dir)
