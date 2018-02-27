@@ -14,7 +14,7 @@
 #######################################################################
 
 # this should be the folder containing the biobank data or symbolic links to that data
-setwd(BB_input)
+setwd(BB_dir)
 
 #######################################################################
 # Load Biobank files 
@@ -25,10 +25,10 @@ setwd(BB_input)
 pcs  = read.table("Eur_QCp_PCs.txt", header=TRUE) 
 
 # list of all samples  (2 columns = copies of IDS, missing =0, toIncl=0)
-sampleHRC = read.table("./500k/ukb_imp_genID.sample", stringsAsFactors=FALSE, header=TRUE) 
+sampleHRC = read.table("./ukb_imp_genID.sample", stringsAsFactors=FALSE, header=TRUE) 
 
 # this file shows who to include to remove related europeans
-excludefiles2<-read.table("./500k/QCed_Eur_unrelated.txt") 
+excludefiles2<-read.table("./QCed_Eur_unrelated.txt") 
 
 # link adiposity to biobank
 samplelink  = read.table("sampleID_map.txt", stringsAsFactors=FALSE, header=TRUE) 

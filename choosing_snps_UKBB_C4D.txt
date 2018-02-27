@@ -1,5 +1,5 @@
 ##################################################################
-# Determine best LP(A) snps
+# Determine best LP(A) snps SCORE with snps present in UKBB and CardiogramC4D
 # Author: Amy Mason
 # Date: Jan 2018
 ##################################################################
@@ -112,37 +112,15 @@ keepB<-keepB[!is.na(keepB$variantID),]
 keep3<-rbind(keepA,keepB)
 rm(keepA, keepB)
 
-write.table(keep3,file="//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/LPA&C4D_vars.txt", row.names = FALSE)
+write.table(keep3,file="//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/LPA&UKBB&C4D_vars.txt", row.names = FALSE)
 rm(keep, keep2, keep3)
 
-# subset UKBB to the overlap with lpa
-
-try3<- import_data(statsfile, inputname="position", lpa, varname="pos") # to do UKBB
-keep<-try3[[1]]
-message(nrow(keep), " variants in UKBioBank & lpa var list")
-
-# leaves 629 variants
-
-# check for duplicates by position/ label with variant ID
-
-lpa_label<-lpa[,c("variantID", "chr", "pos", "allele1", "allele2")]
-keepA<- merge(keep, lpa_label, by.y=c("pos", "allele1", "allele2"), by.x=c("position","alleleA","alleleB"), all.x=TRUE)
-keepA<-keepA[!is.na(keepA$variantID),]
-keepB<- merge(keep, lpa_label, by.y=c("pos", "allele1", "allele2"), by.x=c("position","alleleB","alleleA"), all.x=TRUE)
-keepB<-keepB[!is.na(keepB$variantID),]
-keep2<-rbind(keepA,keepB)
-rm(keepA, keepB)
-
-write.table(keep2,file="//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/LPA&UKBB_vars.txt", row.names = FALSE)
-
-
-
 
 ########################################################################
-# check imputation quality
+# check imputation quality in UKBB & CD4 & LPA vars infor
 ########################################################################
 
-Vars<-read.table("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/LPA_vars.txt", header=T)
+Vars<-read.table("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/LPA&UKBB&C4D_vars.txt", header=T)
 
 
 # set acceptable thresholds for imputation quality
@@ -167,38 +145,7 @@ Vars$QCfail<- Vars$threshold3 + Vars$threshold2 +Vars$threshold1
 
 message(nrow(Vars[Vars$QCfail==1,]), " variants have insufficiently high imputation score (removed)")
 
-QCVars<- write.table(Vars[Vars$QCfail==0,],file="//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/QCed_LPA_vars.txt", row.names = FALSE)
-
-########################################################################
-# check imputation quality
-########################################################################
-
-Vars<-read.table("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/LPA_vars.txt", header=T)
-
-
-# set acceptable thresholds for imputation quality
-rare<-0.9
-lowfreq<-0.9
-common<-0.6
-
-# print out lists of problem snps
-message(paste0("these rare snps have impute values <", rare, " & Allele B frequencies <1%"))
-Vars$threshold1<-ifelse(Vars$impute_info<rare & Vars$alleleB_frequency<0.01, 1,0)
-Vars[Vars$threshold1==1, c("rsid","chromosome","position", "alleleA","alleleB")]
-
-message(paste0("these low frequency snps have impute values <", lowfreq, " & Allele B frequencies 1%<= x <5%"))
-Vars$threshold2<-ifelse(Vars$impute_info<rare & Vars$alleleB_frequency>=0.01 & Vars$alleleB_frequency<0.05 , 1,0)
-Vars[Vars$threshold2==1,  c("rsid","chromosome","position", "alleleA","alleleB")]
-
-message(paste0("these common snps have impute values <", common,"  & Allele B frequencies >5%"))
-Vars$threshold3<-ifelse(Vars$impute_info<common & Vars$alleleB_frequency>=0.05, 1,0)
-Vars[Vars$threshold3==1,  c("rsid","chromosome","position", "alleleA","alleleB")]
-
-Vars$QCfail<- Vars$threshold3 + Vars$threshold2 +Vars$threshold1
-
-message(nrow(Vars[Vars$QCfail==1,]), " variants have insufficiently high imputation score (removed)")
-
-QCVars<- write.table(Vars[Vars$QCfail==0,],file="//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/QCed_LPA_vars.txt", row.names = FALSE)
+write.table(Vars[Vars$QCfail==0,],file="//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/QCed_LPA_BB_C4D_vars.txt", row.names = FALSE)
 
 
 # 618 variants remain
@@ -398,48 +345,6 @@ snps_selected <- fstep$snps
 p <- fstep$p
 results <- data.frame(snps=snps_selected, p=p) 
 
-#write.table(results, paste0(output_dir,"fstep_UKBB_Cardio.txt"), row.names=F, quote=F, sep="\t")
-write.table(results, paste0(output_dir,"fstep_UKBB.txt"), row.names=F, quote=F, sep="\t")
+write.table(results, paste0(output_dir,"fstep_UKBB_C4D_lpa.txt"), row.names=F, quote=F, sep="\t")
 
-
-###########
-
-
-
-d = data[,snps_selected]
-d1 = as.numeric(d[,1])
-d2 = as.numeric(d[,2])
-d3 = as.numeric(d[,3])
-d4 = as.numeric(d[,4])
-d5 = as.numeric(d[,5])
-d6 = as.numeric(d[,6])
-d7 = as.numeric(d[,7])
-d8 = as.numeric(d[,8])
-d9 = as.numeric(d[,9])
-d10 = as.numeric(d[,10])
-d11 = as.numeric(d[,11])
-d12 = as.numeric(d[,12])
-d13 = as.numeric(d[,13])
-d14 = as.numeric(d[,14])
-d15 = as.numeric(d[,15])
-d16 = as.numeric(d[,16])
-d17 = as.numeric(d[,17])
-d18 = as.numeric(d[,18])
-d19 = as.numeric(d[,19])
-d20 = as.numeric(d[,20])
-d21 = as.numeric(d[,21])
-d22 = as.numeric(d[,22])
-d23 = as.numeric(d[,23])
-d24 = as.numeric(d[,24])
-d25 = as.numeric(d[,25])
-d26 = as.numeric(d[,26])
-d27 = as.numeric(d[,27])
-
-model.condall <- summary(lm(y ~ . + d1 + d2 + d3 + d4 + d5 + d6 + d7 + d8 + d9 + d10 + d11 + d12 +
-                              d13 + d14 + d15 + d16 + d17 + d18 + d19 + d20 + d21 + d22 + d23 + d24 + d25 + d26 + d27 , data=c))
-
-for (j in 1:26) {
-  cat(snps_selected[j], " & ", format(c(round(model.condall$coef[33+j,1],1),-11.1))[1], " (",
-      format(c(round(model.condall$coef[33+j,2], 1), 1.1))[1], ") \n", sep="")
-}
 

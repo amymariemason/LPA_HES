@@ -21,8 +21,8 @@ sample_all = read.table("AdiposityID_sampleset", header = TRUE)
 
 
 # load outcomes file and list outcomes of interest
-outcomes = read.csv("./HES outcomes/stroke_pad_all_comb.csv", header=TRUE)
-wanted_outcomes<-c("isch_comb","pad_comb","sah_comb","ich_comb","haem_comb")
+outcomes = read.csv("C:/UKbiobank/Stata_output/All_outcomes.csv", header=TRUE)
+wanted_outcomes<-c("ukb_nstemi")
 #########
 
 # create function that returns column of binary outcomes for whole 

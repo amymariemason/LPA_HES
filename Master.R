@@ -61,7 +61,7 @@ home_dir<- "//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress"
 
 # this is the directory containing the Biobank source files for step1
 ### if running on cardio, symbolic links to these files can be found in 
-BB_dir<-paste0(home_dir, "/BB_inputs/")
+BB_dir<-paste0(home_dir, "/BB_input/")
 
 # output file
 output_dir<-paste0(home_dir, "/Outputs/")
