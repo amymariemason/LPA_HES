@@ -43,6 +43,7 @@ error_log <- "./errors.log" # alter this to change logfile name
 log_error <- file(error_log, open="wt")
 sink(log_error, type=c("message"), append = FALSE)
 message(paste("MR analysis started on: ", format(Sys.time(), "%a %b %d %X %Y")), "\n\n")
+sessionInfo()
 sink(type=c("message"))
 close(log_error)
 
