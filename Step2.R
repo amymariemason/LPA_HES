@@ -9,9 +9,8 @@
 
 
 # libraries and setup
-rm(list=ls())
 #setwd("C://Users/am2609/Programs/GWAS_inprogress")
-setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress")
+setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs")
 
 
 
@@ -21,8 +20,8 @@ sample_all = read.table("AdiposityID_sampleset", header = TRUE)
 
 
 # load outcomes file and list outcomes of interest
-outcomes = read.csv("./HES outcomes/stroke_pad_all_comb.csv", header=TRUE)
-wanted_outcomes<-c("isch_comb","pad_comb","sah_comb","ich_comb","haem_comb")
+outcomes = read.csv("C:/UKbiobank/Stata_output/All_outcomes2.csv", header=TRUE)
+wanted_outcomes<-c("ukb_nstemi")
 #########
 
 # create function that returns column of binary outcomes for whole 
@@ -50,7 +49,7 @@ allframes = lapply(wanted_outcomes,
                                               sample_id="ID_1", 
                                               outcomefile=outcomes, 
                                               outcome=x, 
-                                              outcome_id="eid"))
+                                              outcome_id="n_eid"))
 answer = do.call(cbind,allframes)
 
 # check same row number and bind
@@ -63,5 +62,5 @@ sample_out[,1]<-sample_out[,2]
 
 
 # save sample file
-write.table(sample_out, "./lpa_HESoutcomes.sample", row.names=FALSE, quote=FALSE)
+write.table(sample_out, "./UKBB_outcomes.sample", row.names=FALSE, quote=FALSE)
 

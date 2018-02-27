@@ -43,6 +43,7 @@ error_log <- "./errors.log" # alter this to change logfile name
 log_error <- file(error_log, open="wt")
 sink(log_error, type=c("message"), append = FALSE)
 message(paste("MR analysis started on: ", format(Sys.time(), "%a %b %d %X %Y")), "\n\n")
+sessionInfo()
 sink(type=c("message"))
 close(log_error)
 
@@ -61,7 +62,7 @@ home_dir<- "//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress"
 
 # this is the directory containing the Biobank source files for step1
 ### if running on cardio, symbolic links to these files can be found in 
-BB_dir<-paste0(home_dir, "/BB_inputs/")
+BB_dir<-paste0(home_dir, "/BB_input/")
 
 # output file
 output_dir<-paste0(home_dir, "/Outputs/")
