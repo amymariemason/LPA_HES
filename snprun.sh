@@ -9,11 +9,13 @@
 #SBATCH --mem_bind=verbose,local
 #SBATCH --output=GWAS1.out
 #SBATCH --error=GWAS1.err
-#SBATCH --job-name=13_12extract
+#SBATCH --job-name=gwas
 #SBATCH --mem=64G
 
 . /etc/profile.d/modules.sh
 module load snptest
+
+date
 
 for output in isch_comb pad_comb sah_comb ich_comb haem_comb
 do
@@ -27,6 +29,6 @@ snptest -data /scratch/am2609/Gwas/lpa_snps.bgen /scratch/am2609/Gwas/lpa_HESout
 -cov_names PC1 PC2 PC3 PC4 PC5 PC6 PC7 PC8 PC9 PC10
 done
 
-
+date
 
 
