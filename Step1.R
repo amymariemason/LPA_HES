@@ -1,4 +1,4 @@
-######
+﻿######
 # Author: Amy Mason ; based heavily on code by Stephen Burgess with additional comments from Jess
 # Date: Oct 2017
 # Goal: Perform GWAS on biobank stroke outcomes 
@@ -13,7 +13,7 @@
 # Desktop setup
 #######################################################################
 
-# this should be the folder containing the biobank data or symbolic links to that data
+# this should not be the folder containing the biobank data or symbolic links to that data
 setwd(BB_dir)
 
 #######################################################################
