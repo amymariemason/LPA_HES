@@ -26,7 +26,7 @@ date
 chr=${SLURM_ARRAY_TASK_ID}
 
 qctool -g /scratch/curated_genetic_data/uk_biobank/imputed/full_release/HRC_subset/ukb_imp_chr${chr}_HRConly.bgen \
--og /scratch/am2609/Gwas/lpa_snps_chr${chr}.bgen -incl-positions /scratch/am2609/Gwas/test_snps.txt
+-og /scratch/am2609/Gwas/hackthon_snps_chr${chr}.bgen -incl-positions /scratch/sb452/hacksnps/lipidsnps_all.txt
 
 
 date

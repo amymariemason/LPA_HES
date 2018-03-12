@@ -1,0 +1,102 @@
+Structure of folders within Gwas
+
+input_all: contains files that are needed for all GWAS runs in UK Biobank 
+	-exclusion lists for related/ethnicity
+
+code: contain all the program files that need to be run
+	- qctool_run.sh : subsets bgen files for use in snptest
+	- snptest_run.sh: runs snptest on requested outcomes
+	-folders.sh: creates the correct folder structure for other programs to work
+	See individual read-mes for these programs at the end of this explanation
+
+projects: contains folders for the inputs and outputs of each individual project
+	General structure
+		- Inputs: project specific inputs
+			-eg. lists of snps, sample files containing outcomes
+		- Bgen: (output from qctool) all the bgen files with names indexed by project and chr#
+		- Outputs: Final association results 
+		- Error reports: reports from running code NOTE THIS FOLDER MUST EXIST BEFORE RUNNING qctool_run and snptest_run
+
+
+
+--------------------------------------------------------------------------
+
+folders.sh: creates the correct folder structure for other programs to work. The error files for this will appear in your current working directory, afterwards everything happens in the new structure 
+
+use the commands below:
+
+
+# set working directory
+  cd /scratch//${USER}  
+# set main directory for projects
+  main_dir="/scratch/am2609/Gwas"
+# set name of your project  
+  proj_name="Test"
+# create the folders
+  sbatch --export=main_dir="${main_dir}",proj_name="${proj_name}" /scratch/am2609/Gwas/code_current/folders.sh
+
+This will produce an error/out document for folders telling you if it complete sucessfully in you working directory. These can be deleted if the code ran without errors.
+This can be safely run again for multiple projects - it will not over-write existing files. 
+
+------------------------------------------------------------------------
+
+qctool_run.sh: subsets the UKbiobank bgen files (as one file per chromosone)
+requires as input: file address for .txt space seperated file listing the snps needed. They must be in the form chr:pos with leading zeros if chr<10 ( eg 06:160493099)
+
+Run the commands below
+
+# set main directory for projects
+  main_dir="/scratch/am2609/Gwas"
+# set name of your project  
+  proj_name="LPA"  
+# set input file containing snp list (this should be placed in the input folder for that project)
+  input_snps_file="lpa_snps_amy.txt"
+  input_snps_add="${main_dir}/projects/${proj_name}/input/${input_snps_file}"
+# set folders for output (as outlined in structure plan above)
+  error_dir="${main_dir}/projects/${proj_name}/errors"
+  output_dir="${main_dir}/projects/${proj_name}/bgen"
+# insert name for the outputed bgen files (I would suggest just using the project name, unless there are multiple extractions)
+  output_name="${proj_name}" 
+# list what chromosomes to extract from eg 1,2,3 or 1-22
+  wanted_chrs=6
+
+#run the command to extract the relevant snps from the .bgen files
+# this starts as many processes as there are chromosomes
+  sbatch --export=input_snps="${input_snps_add}",output_dir="${output_dir}",output_name="${output_name}" --output="${error_dir}"/qctool_%A_%a.out  --error="${error_dir}"/qctool_%A_%a.err --array="${wanted_chrs}" "${main_dir}"/code/qctool_run.sh
+  
+------------------------------------------------------------------------
+
+qctool_run2.sh: subsets the UKbiobank bgen files (as a single file)
+requires as input: file address for .txt space seperated file listing the snps needed. They must be in the form chr:pos with leading zeros if chr<10 ( eg 06:160493099)
+
+Run the commands below
+
+# set main directory for projects
+  main_dir="/scratch/am2609/Gwas"
+# set name of your project  
+  proj_name="LPA"  
+# set input file containing snp list (this should be placed in the input folder for that project)
+  input_snps_file="lpa_snps_amy.txt"
+  input_snps_add="${main_dir}/projects/${proj_name}/input/${input_snps_file}"
+# set folders for output (as outlined in structure plan above)
+  error_dir="${main_dir}/projects/${proj_name}/errors"
+  output_dir="${main_dir}/projects/${proj_name}/bgen"
+# insert name for the outputed bgen files (I would suggest just using the project name, unless there are multiple extractions)
+  output_name="${proj_name}" 
+
+
+#run the command to extract the relevant snps from the .bgen files
+  sbatch --export=input_snps="${input_snps_add}",output_dir="${output_dir}",output_name="${output_name}" --output="${error_dir}"/qctool_%A.out --error="${error_dir}"/qctool_%A.err "${main_dir}"/code/qctool_run2.sh
+  
+------------------------------------------------------------------------
+
+  
+
+  
+  
+
+
+
+
+
+ 

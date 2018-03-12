@@ -21,7 +21,8 @@ sample_all = read.table("AdiposityID_sampleset", header = TRUE)
 
 # load outcomes file and list outcomes of interest
 outcomes = read.csv("C:/UKbiobank/Stata_output/All_outcomes2.csv", header=TRUE)
-wanted_outcomes<-c("ukb_nstemi")
+wanted_outcomes<-c("ukb_mi", "dvt", "pe", "ast", "af", "aa", "taa")	
+#ukb_mi_nSR	ukb_stemi	ukb_stemi_nSR	ukb_nstemi	ukb_nstemi_nSR	ukb_stroke	ukb_stroke_nSR	ukb_stri	ukb_stri_nSR	ukb_ich	ukb_ich_nSR	ukb_sah	ukb_sah_nSR	cad_soft	cad_soft_nSR	cad_hard	cad_hard_nSR	cad_int	cad_int_nSR	tia	tia_nSR	pvd	pvd_nSR	dvt	dvt_nSR	pe	pe_nSR	aaa	aaa_nSR	hf	hf_nSR	dmcp	dmcp_nSR	hf_dmcp	hf_dmcp_nSR	ast	ast_nSR	af	af_nSR	ckd	ckd_nSR	hpt	hpt_nSR	taa	taa_nSR	aa	aa_nSR	hf_cmp	hf_cmp_nSR	vte	vte_nSR")
 #########
 
 # create function that returns column of binary outcomes for whole 
