@@ -1,14 +1,3 @@
-MR analysis started on:  Tue Feb 27 11:18:31 2018
-
-
-Step 1 run on  Tue Feb 27 11:18:42 2018
-
-
-Error in file(filename, "r") : cannot open the connection
-In addition: Warning message:
-In file(filename, "r") :
-  cannot open file 'gwas_create_sample_file_step1.R': No such file or directory
-Error in ll : object 'll' not found
-Step 1 finished run on  Tue Feb 27 11:18:42 2018
+MR analysis started on:  Wed Mar 14 13:00:29 2018
 
 

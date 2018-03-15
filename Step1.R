@@ -80,7 +80,7 @@ sampleHRC_pheno[2:(dim(sampleHRC_PC)[1]), 1] = samplepheno
 
 sampleHRC_PC$exclude<-!(sampleHRC_PC[,1]%in%excludefiles2[,1])
 exclusionlist<-sampleHRC_PC[sampleHRC_PC$exclude==TRUE,]$ID_1
-write.table(sampleHRC_PC, paste0(output_dir,"exclusion_list.txt"), row.names=FALSE, quote=FALSE)
+write.table(exclusionlist, paste0(output_dir,"exclusion_list.txt"), row.names=FALSE, quote=FALSE)
 
 # check that only excluded IDs lack PCs
 #Check only the excluded participants do not have PC data. Use the assert function to see whether there are participants  
