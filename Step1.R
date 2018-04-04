@@ -53,8 +53,11 @@ pcs_1 = pcs[whichlink2,c(1,3:12)]
 
 # add principle components to sampleHRC
 #Merge the PCs with the sample data using the UK Biobank ID. By having the option all.x keep values from x that do not  
-#match any value from y.  
-sampleHRC_PC<-merge(sampleHRC[,1:3], pcs_1, by.x="ID_1", by.y="FID", all.x = TRUE)
+#match any value from y.
+sampleHRC$id<-1:nrow(sampleHRC)
+sampleHRC_PC<-merge(sampleHRC, pcs_1, by.x="ID_1", by.y="FID", all.x = TRUE)
+sampleHRC_PC<-sampleHRC_PC[order(sampleHRC_PC$id),]
+
 
 # add col describtors 
 #We need to provide column describtors for QCTOOL and SNPTEST. For all of the PC columns replace the first entry with  
@@ -80,7 +83,7 @@ sampleHRC_pheno[2:(dim(sampleHRC_PC)[1]), 1] = samplepheno
 
 sampleHRC_PC$exclude<-!(sampleHRC_PC[,1]%in%excludefiles2[,1])
 exclusionlist<-sampleHRC_PC[sampleHRC_PC$exclude==TRUE,]$ID_1
-write.table(sampleHRC_PC, paste0(output_dir,"exclusion_list.txt"), row.names=FALSE, quote=FALSE)
+write.table(exclusionlist, paste0(output_dir,"exclusion_list.txt"), row.names=FALSE, quote=FALSE)
 
 # check that only excluded IDs lack PCs
 #Check only the excluded participants do not have PC data. Use the assert function to see whether there are participants  

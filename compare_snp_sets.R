@@ -1,9 +1,10 @@
 ##################################################################
-# Compare best LP(A) snps
+# Compare best LP(A) snps from 3 sets generated
 # Author: Amy Mason
 # Date: Jan 2018
 ##################################################################
 # Only relevant to LP(a) project, will not generalise?
+# as all sets extremely similar use the overlap with cardiogram C4D set 
 
 ##############################################################
 # Load Data
@@ -196,3 +197,13 @@ data_sub$gpc_4 <- as.numeric(data_sub$gpc_4)
 data_sub$gpc_5 <- as.numeric(data_sub$gpc_5)
 
 write.table(data_sub, file = "//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/LPA_cov_set")
+
+####### 
+# having chosen the intersection of c4d cardiogram and UKBB snps, output in a snptest suitable form 
+
+
+UKBBC4D<-read.table("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/fstep_UKBB_C4D_lpa.txt", header=TRUE,  colClasses="character")
+lpa <- read.table("//me-filer1/home$/am2609/My Documents/Blood Cell Traits Data/LPA/LPA_Variants_EUwinsor_withoutM.txt", sep="\t", header=T, colClasses="character")
+keep<-merge(UKBBC4D, lpa, by.x="snps", by.y="variantID", all.x=TRUE, all.y=FALSE)
+keep$outputcol<-paste0("0",keep$chr,":",keep$pos)
+write.table(t(keep$outputcol),"//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Outputs/lpa_snps_amy.txt",sep=" ",row.names=FALSE, quote =FALSE, col.names=FALSE)
