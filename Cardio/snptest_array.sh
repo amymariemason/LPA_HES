@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH --time=8:0:0 
+#SBATCH --time=2:0:0 
 #SBATCH --nodes=1 
 #SBATCH --ntasks=1 
 #SBATCH --cpus-per-task=1
 #SBATCH --mail-type=FAIL
 #SBATCH --mail-type=END
 #SBATCH --mem_bind=verbose,local
-#SBATCH --output=snptest_%A.out
-#SBATCH --error=snptest_%A.err
+#SBATCH --output=snptest_%A_%a.out
+#SBATCH --error=snptest_%A_%a.err
 #SBATCH --job-name=snptest
 #SBATCH --mem=16G
 #FILENAME: snptest_run
@@ -22,17 +22,23 @@
 . /etc/profile.d/modules.sh
 module load snptest
 
+
 # create an array of the covariates
 
 date
 
 IFS=' ' read -a covar_arr <<<"$covar"
 
+
+# set outcome for this script
+
+outcome_number=${SLURM_ARRAY_TASK_ID}
+line=$(sed "${outcome_number}q;d" "${outcome_file}")
+
+
 # loop over outcomes to use
 
-while read line
-do
-   printf "\n%s\n" "snptest running for outcome: ${line}"
+printf "\n%s\n" "snptest running for outcome: ${line}"
 snptest -data "${bgen_file}" "${sample_file}" \
 -o "${output_dir}"/"${proj}_${line}.out" \
 -exclude_samples /scratch/am2609/Gwas/input_all/exclusion_list.txt \
@@ -40,6 +46,6 @@ snptest -data "${bgen_file}" "${sample_file}" \
 -method score \
 -pheno "${line}" \
 -cov_names "${covar_arr[@]}" 
-done <"${outcome_file}"
+
 
 date

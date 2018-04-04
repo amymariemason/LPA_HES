@@ -8,7 +8,7 @@
 #SBATCH --mem_bind=verbose,local
 #SBATCH --error=GWAS1.err
 #SBATCH --mem=64G
-#SBATCH --job-name=qctool_%A
+#SBATCH --job-name=qctool
 #SBATCH --error=reports/qctool_%A.err
 #SBATCH --output=reports/qctool_%A.out
 #FILENAME: qctool_run2

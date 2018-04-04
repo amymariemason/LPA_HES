@@ -79,7 +79,7 @@ It requires  1) a sample file containing the outcomes and principle components (
   proj_name="LPA"    
 # set name for the associations file <- default is the same as the project name   
   output_name="${proj_name}" 
-# set input file containing outcome names list <- this should be space seperated and placed in the input folder for that project
+# set input file containing outcome names list <- this should be line seperated, with a final blank line and placed in the input folder for that project
   input_file1="outcomes.txt"
 # set covariates for snptest command <- default is first 10 principle components
   covar="PC1 PC2 PC3 PC4 PC5 PC6 PC7 PC8 PC9 PC10"
@@ -132,6 +132,77 @@ Run the commands below
   
   
 
+snptest_run1.sh  : runs additive frequentist association tests on specified snps, for given outcomes  (runs on one file per chromosome)
+This will loop round multiple outcomes, and run on unrelated european members of UKBiobank
+It requires  1) a sample file containing the outcomes and principle components (and any other covariates of relevance), with a matching text file listing the outcomes to run snp test for in the inputs folder
+2) a .bgen file containing the snps you want to run in the .bgen folder
+3) .txt file listing the outcomes to run, one outcome per line. The file should be in the project input folder.
+  
+#USER INPUTS  
+# set main directory for projects <- this should be the same as the main file given in folders.sh
+  main_dir="/scratch/am2609/Gwas"
+# set name of your project  <- this should be the same as the main file given in folders.sh
+  proj_name="Hackathon_march"    
+# set name for the associations file <- default is the same as the project name   
+  output_name="${proj_name}" 
+# set input file containing outcome names list <- this should be line seperated, with a final blank line and placed in the input folder for that project
+  input_file1="outcomes.txt"
+# set covariates for snptest command <- default is first 10 principle components
+  covar="PC1 PC2 PC3 PC4 PC5 PC6 PC7 PC8 PC9 PC10"
+# set sample file containing outcomes and covariates as requested in previous two files (this should be a .sample and placed in the input folder for that project)
+  sample_file="UKBB_outcomes.sample"
+# set bgen file name <- default name is the project name, should match qctool instruction above (this should be a .bgen file and in the bgen folder).  put a "#" to call all documents with that character replaced with number 1-22
+  bgen_file_name="hackthon_snps_chr#"
+# NO FURTHER INPUT NEEDED  
+# create input addresses
+  input1="${main_dir}/projects/${proj_name}/input/${input_file1}"
+  sample1="${main_dir}/projects/${proj_name}/input/${sample_file}"
+  bgen1="${main_dir}/projects/${proj_name}/bgen/${bgen_file_name}.bgen"
+# folders for output (as outlined in structure plan above)
+  error_dir="${main_dir}/projects/${proj_name}/errors"
+  output_dir="${main_dir}/projects/${proj_name}/output"
+
+#run command to run snptest  
+ sbatch --export=outcome_file="${input1}",covar="${covar}",sample_file="${sample1}",bgen_file="${bgen1}",proj="${proj_name}",output_dir="${output_dir}" --output="${error_dir}"/snptest_%A.out --error="${error_dir}"/snptest_%A.err "${main_dir}"/code/snptest.sh
+  
+  
+ snptest_array.sh  : runs additive frequentist association tests on specified snps, for given outcomes  
+ This version will launch as many scripts as you have outcomes, to speed up processing but require more memory overall
+This will loop round multiple outcomes, and run on unrelated european members of UKBiobank
+It requires  1) a sample file containing the outcomes and principle components (and any other covariates of relevance), with a matching text file listing the outcomes to run snp test for in the inputs folder
+2) a .bgen file containing the snps you want to run in the .bgen folder
+3) .txt file listing the outcomes to run, one outcome per line. The file should be in the project input folder.
+  
+#USER INPUTS  
+# set main directory for projects <- this should be the same as the main file given in folders.sh
+  main_dir="/scratch/am2609/Gwas"
+# set name of your project  <- this should be the same as the main file given in folders.sh
+  proj_name="Hackathon_march"    
+# set name for the associations file <- default is the same as the project name   
+  output_name="${proj_name}" 
+# set input file containing outcome names list <- this should be line seperated, with a final blank line and placed in the input folder for that project
+  input_file1="outcomes.txt"
+# set covariates for snptest command <- default is first 10 principle components
+  covar="PC1 PC2 PC3 PC4 PC5 PC6 PC7 PC8 PC9 PC10"
+# set sample file containing outcomes and covariates as requested in previous two files (this should be a .sample and placed in the input folder for that project)
+  sample_file="UKBB_outcomes.sample"
+# set bgen file name <- default name is the project name, should match qctool instruction above (this should be a .bgen file and in the bgen folder).  put a "#" to call all documents with that character replaced with number 1-22
+  bgen_file_name="hackthon_snps_chr#"
+#
+# NO FURTHER INPUT NEEDED  
+# create input addresses
+  input1="${main_dir}/projects/${proj_name}/input/${input_file1}"
+  sample1="${main_dir}/projects/${proj_name}/input/${sample_file}"
+  bgen1="${main_dir}/projects/${proj_name}/bgen/${bgen_file_name}.bgen"
+# folders for output (as outlined in structure plan above)
+  error_dir="${main_dir}/projects/${proj_name}/errors"
+  output_dir="${main_dir}/projects/${proj_name}/output"
+# count number of outcomes
+out_count=$(wc -l < ${input1})  
+
+#run command to run snptest  
+ sbatch --export=outcome_file="${input1}",covar="${covar}",sample_file="${sample1}",bgen_file="${bgen1}",proj="${proj_name}",output_dir="${output_dir}" --array="1-${out_count}" --output="${error_dir}"/snptest_%A_%a.out --error="${error_dir}"/snptest_%A_%a.err  "${main_dir}"/code/snptest_array.sh
+  
 
 
 
