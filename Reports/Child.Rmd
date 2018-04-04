@@ -1,7 +1,7 @@
 
 
 ```{r echo=FALSE, results='asis',message=FALSE, warning=FALSE}
-#load("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/500k/results.RData")
+#load("//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Outputs/stroke_results.RData")
 
 input <- data.frame(
   name = sapply(list_save, "[[", 2),

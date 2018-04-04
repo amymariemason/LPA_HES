@@ -9,7 +9,7 @@
 #SBATCH --output=snptest_%A.out
 #SBATCH --error=snptest_%A.err
 #SBATCH --job-name=snptest
-#SBATCH --mem=64G
+#SBATCH --mem=16G
 #FILENAME: snptest_run
 #AUTHOR : Amy Mason
 #PURPOSE: run snptest on inputed bgen file using inputed .sample file for a set of outcomes
@@ -22,22 +22,27 @@
 . /etc/profile.d/modules.sh
 module load snptest
 
-# load list of what outcomes to use
-value=$(<${outcome_file})
-echo "$value"
+# create an array of the covariates
+
+IFS=' ' read -a covar_arr <<<"$covar"
+echo "${covar_arr[@]}" 
+# loop over outcomes to use
+
+while read line
+do
+   printf "\n%s\n" "snptest running for outcome: ${line}"
+snptest -data "${bgen_file}" "${sample_file}" \
+-o "${output_dir}"/"${proj}_${line}.out" \
+-exclude_samples /scratch/am2609/Gwas/input_all/exclusion_list.txt \
+-frequentist 1 \
+-method score \
+-pheno "${line}" \
+-cov_names "${covar_arr[@]}" 
+done <"${outcome_file}"
 
 
-#for output in isch_comb pad_comb sah_comb ich_comb haem_comb
-#do
-#echo $output
-#echo snptest -data /scratch/am2609/Gwas/test2.bgen /scratch/am2609/Gwas/lpa_HESoutcomes.sample \
-#-o /scratch/am2609/Gwas/GWAS_HESoutcomes_$output-output.out \
-#-exclude_samples /scratch/curated_genetic_data/uk_biobank/imputed/full_release/HRC_EUR_subset/toExcl_Imp_nonEur_or_QCf.txt \
-#-include_samples /scratch/curated_genetic_data/uk_biobank/genotyped/full_release/QCd_data/QCed_Eur_unrelated.txt
-#-frequentist 1 \
-#-method score \
-#-pheno $output \
-#-cov_names PC1 PC2 PC3 PC4 PC5 PC6 PC7 PC8 PC9 PC10
+
+
 #done
 
 

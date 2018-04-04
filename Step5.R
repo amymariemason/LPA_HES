@@ -38,7 +38,7 @@ corr<- corr
 #######################################
 
 # set working directory
-setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/500k")
+setwd("//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Inputs")
 # this directory should contain your input files as detailled above
 #setwd("D:/CurrentWork/500k")
 
@@ -69,26 +69,21 @@ for (i in 1:length(TL)){
   outcomename<-as.character(TLall[i,"name"])
   cat("\n", as.character(outcomename),"\n")
   
-  #add report to new logfile
-  # create log file 
-  logfile<-paste ("./Logs/", outcomespec,"_mr.log", sep="")
-  sink(logfile, append=FALSE, split=TRUE)
-  cat("\n This log file is showing working on the merge and mr calculations of MR_calc_loop_step_4.R with ", outcomespec, " file \n")
- 
   # load data as file called output 
-  output<-read.table(paste("./Inputs/", outcomespec, ".out", sep = ""), header=T)
+  output<-read.table(paste("//me-filer1/home$/am2609/My Documents/Programs/MR projects/LPA/Inputs/LPA_", outcomespec, ".out", sep = ""), header=T)
   outcome<-output[,c("chromosome", "position", "alleleA", "alleleB", "frequentist_add_beta_1", "frequentist_add_se_1")]
   names(outcome)<-c("chr","pos","A1","A2", "outcomeBeta", "outcomeSE")
   outcome$chr<-as.character(outcome$chr)
   outcome$pos<-as.character(outcome$pos)
   
-  # create reversed data set for directional realignment
-  X_associations_rev<-X_associations
-  X_associations_rev$beta<-(-1)*as.numeric(X_associations_rev$beta)
+  # create reversed data set of outcome for directional realignment
+  #because if I realign the X_associations, I'll need to realign the correlation matrix as well
+  outcome_rev<-outcome
+  outcome_rev$outcomeBeta<-(-1)*as.numeric(outcome_rev$outcomeBeta)
   
   # subset X-outcome data to those variants in the Y-outcome dataset
-  outcomeA<-merge(outcome, X_associations_rev, by.x=c("chr","pos","A1","A2"), by.y=c("chr", "pos", "a2", "a1"))
-  outcomeB<-merge(outcome, X_associations, by.x=c("chr","pos","A1","A2"), by.y=c("chr", "pos", "a1", "a2"))
+  outcomeA<-merge(outcome, X_associations, by.x=c("chr","pos","A1","A2"), by.y=c("chr", "pos", "a1", "a2"))
+  outcomeB<-merge(outcome_rev, X_associations, by.x=c("chr","pos","A2","A1"), by.y=c("chr", "pos", "a1", "a2"))
   outcome2<-rbind(outcomeA, outcomeB)
   outcome3<-na.omit(outcome2)
   
@@ -149,9 +144,8 @@ for (i in 1:length(TL)){
   summary_temp<-list(outcomespec, outcomename,MRdata_input,mr)
   list_save[[i]]<-summary_temp
   # end log file
-  sink()
-  sink.number()==0
+
 } 
 
 #save and add to report
-save(list_save, file = "./Outputs/results.RData")
+save(list_save, file = "//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Outputs/stroke_results.RData")

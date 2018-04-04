@@ -12,7 +12,7 @@
 
 #set working directory
 # this needs to be the directory where the LP(a) files below are kept
-setwd("//me-filer1/home$/am2609/My Documents/Blood Cell Traits Data/LPA")
+setwd("//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Inputs")
 #setwd("D:/CurrentWork")
 
 
@@ -25,7 +25,7 @@ data_rho_master <- read.table("LPA_master_dataset_pcs_EUwinsor_withoutM.txt", he
 # all snps associations with lpa
 lpa <- read.table("LPA_Variants_EUwinsor_withoutM.txt", sep="\t", header=T, colClasses="character")
 # list of variants
-fsteps <- read.table("fstep_snps_0.4_EUwinsor.txt", sep="\t", header=T, colClasses="character")
+fsteps <- read.table("fstep_UKBB_C4D_lpa.txt", sep="\t", header=T, colClasses="character")
 
 
 # subset associations to only required snps
@@ -37,7 +37,7 @@ X_associations <- lpa[, c("variantID", "snp", "chr.pos", "chr", "pos" , "a1", "a
 
 # keep correlation matrix to only required snps 
   data_rho <- data_rho_master[(data_rho_master$prev_chd==0), ]
-  data_rho <- data_rho[, match(outcome3$variantID, names(data_rho))]
+  data_rho <- data_rho[, match(X_associations$variantID, names(data_rho))]
   data_rho <- as.matrix(data_rho)
   class(data_rho) <- "numeric"
   corr <- cor(data_rho, use="complete.obs")
