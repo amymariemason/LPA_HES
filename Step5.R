@@ -149,3 +149,9 @@ for (i in 1:length(TL)){
 
 #save and add to report
 save(list_save, file = "//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Outputs/stroke_results.RData")
+
+# make report
+
+rmarkdown::render('C:/Users/am2609/Code/Reports/Main_report.Rmd',
+                  output_file = 'stroke_results.hmtl', 
+                  params=list(dataset="//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Outputs/stroke_results.RData"))
