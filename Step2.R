@@ -64,6 +64,12 @@ sample_out[,1]<-sample_out[,2]
 sample_out$id2<-1:nrow(sample_out)
 assertthat::are_equal(sample_out$id, sample_out$id2)
 
+#remove unneeded columns
+sample_out<-sample_out[, !names(sample_out) %in% c("id", "exclude", "error_check","id2")]
+
+# fix error with snptest not reading missing correctly
+sample_out[1, "missing"]<-0
+
 # save sample file
 write.table(sample_out, "./UKBB_outcomes.sample", row.names=FALSE, quote=FALSE)
 

@@ -1,8 +1,10 @@
 ---
-title: "Mendelian randomization results for various blood traits and LP(a)"
+title: "Mendelian randomization results for stroke and LP(a)"
 author: "Amy Mason"
-date: "6 December 2017"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: html_document
+params:
+  dataset: "//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Outputs/stroke_results.RData"
 ---
 
 ## Table of results
@@ -10,7 +12,7 @@ output: html_document
 ```{r setup, include=FALSE}
 require("knitr")
 knitr::opts_chunk$set(echo = TRUE)
-opts_knit$set(root.dir = "//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/500k/")
+opts_knit$set(root.dir = "C:/Users/am2609/Code/Reports")
 muffleError <- function(x,options) {}
 #hide all error warnings in final document
 knit_hooks$set(error=muffleError)
@@ -29,7 +31,7 @@ library(pander)
 ```
 
 ```{r echo=FALSE, include=TRUE, results='asis'}
-load("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/500k/Outputs/results.RData")
+load(params$dataset)
 
 input <- data.frame(
   name = sapply(list_save, "[[", 2),
