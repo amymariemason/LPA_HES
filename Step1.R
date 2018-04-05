@@ -45,8 +45,8 @@ samplelink  = read.table("sampleID_map.txt", stringsAsFactors=FALSE, header=TRUE
 # Create blank sample file
 ######################################################################
 
-# create ordered list of the principle components
-#Extract the first 10 PCs by creating an ordered list of the PCs by using the ID numbers in the PC doc and the sample doc 
+# create list of the principle components
+#Extract the first 10 PCs by creating an  list of the PCs by using the ID numbers in the PC doc and the sample doc 
 
 whichlink2 = which(pcs[,1]%in%sampleHRC[,1])
 pcs_1 = pcs[whichlink2,c(1,3:12)]
@@ -74,16 +74,21 @@ samplepheno = samplelink[whichlink,2]
 
 # replace the UKbiobank IDs with Adiposity IDS
 #sampleHRC contains two ID ('ID_1' and 'ID_2') fields which are identical. Replace the first one with the adiposity IDs 
+sampleHRC_pheno<-merge(sampleHRC_PC,samplelink , by.x="ID_1", by.y="UKB_sample_ID", all.x = TRUE)
+#return to original order
+sampleHRC_pheno<-sampleHRC_pheno[order(sampleHRC_pheno$id),]
+# replace ID_1
+sampleHRC_pheno[,"ID_1"]<-sampleHRC_pheno$Adiposity_sample_ID
+#remove unneeded columns
+sampleHRC_pheno<-sampleHRC_pheno[, !names(sampleHRC_pheno) %in% c("Adiposity_sample_ID", "BP_sample_ID")]
 
-sampleHRC_pheno = sampleHRC_PC
-sampleHRC_pheno[2:(dim(sampleHRC_PC)[1]), 1] = samplepheno
 
-# create exclusion list from inclusion input
+# create exclusion list from inclusion inputmer
 #At the moment we only have an inclusion list, but some of the genetic tools need an exclusion list.  
 
 sampleHRC_PC$exclude<-!(sampleHRC_PC[,1]%in%excludefiles2[,1])
-exclusionlist<-sampleHRC_PC[sampleHRC_PC$exclude==TRUE,]$ID_1
-write.table(exclusionlist, paste0(output_dir,"exclusion_list.txt"), row.names=FALSE, quote=FALSE)
+exclusionlist<-sampleHRC_PC[sampleHRC_PC$exclude==TRUE,]$ID_2
+write.table(exclusionlist[2:nrow(sampleHRC_PC)], paste0(output_dir,"exclusion_list.txt"), row.names=FALSE, quote=FALSE)
 
 # check that only excluded IDs lack PCs
 #Check only the excluded participants do not have PC data. Use the assert function to see whether there are participants  
