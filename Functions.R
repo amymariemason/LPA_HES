@@ -58,6 +58,7 @@ change_col_character<-function(varlist, varchange=names(varlist), coltype=rep("c
 }
 
 # IMPROVEMENT NOTE: this in many cases would be better implemented with grep in bash. 
+# IMPROVEMENT NOTE: look into iterator package https://www3.nd.edu/~steve/computing_with_data/23_data_import/data_import.html
 # IMPROVEMENT NOTE: currently ADDING SPACES AROUND THE OUTSIDE SOMETIMES PREVENTS MATCHES -EPIC FILES
         #ADD OPTION TO MATCH " "+j+" " or j+"_" (currently matches latter)
 # imports data into blank file, reports missing data in list
@@ -148,3 +149,20 @@ import_data<-function(inputfile, inputname, varlist, varname=names(varlist)[[1]]
   return(outlist)
 }
 
+
+#############################
+
+# adds binary outcome column to match ordering of the .sample file
+
+extract_outcome<-function(sample_list, sample_id="ID_1", outcomefile, outcome, outcome_id="eid"){
+  stopifnot(!is.null(outcomefile[,outcome]))
+  stopifnot(!is.null(outcomefile[,outcome_id]))
+  stopifnot(!is.null(sample_list[,sample_id]))
+  events<-which(outcomefile[,outcome]==1)
+  cases = unique(outcomefile[events,outcome_id])
+  output_temp = ifelse(as.numeric(sample_list[2:nrow(sample_list),sample_id])%in%cases, 1, 0)
+  output_temp<-as.data.frame(output_temp)
+  output_temp<-rbind("B", output_temp)
+  names(output_temp)<-outcome
+  return(output_temp)
+}

@@ -38,7 +38,7 @@ corr<- corr
 #######################################
 
 # set working directory
-setwd("//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Inputs")
+setwd(inputs_dir)
 # this directory should contain your input files as detailled above
 #setwd("D:/CurrentWork/500k")
 
@@ -70,9 +70,13 @@ for (i in 1:length(TL)){
   cat("\n", as.character(outcomename),"\n")
   
   # load data as file called output 
-  output<-read.table(paste("//me-filer1/home$/am2609/My Documents/Programs/MR projects/LPA/Inputs/LPA_", outcomespec, ".out", sep = ""), header=T)
+  output<-read.table(paste(inputs_dir, outcomespec, ".out", sep = ""), header=T)
   outcome<-output[,c("chromosome", "position", "alleleA", "alleleB", "frequentist_add_beta_1", "frequentist_add_se_1")]
-  names(outcome)<-c("chr","pos","A1","A2", "outcomeBeta", "outcomeSE")
+  # identity alignment of data -> beta is measured as effect of additional copies of A1. Coming from snptest :
+  # "“SNPTEST codes allele_A as 0 and allele_B as 1 and this defines the meaning of the beta's and there se's. 
+  # For example, when using the additive model the beta estimates the increase in log-odds that can be attributed 
+  # to each copy of allele_B. "
+  names(outcome)<-c("chr","pos","A2","A1", "outcomeBeta", "outcomeSE")
   outcome$chr<-as.character(outcome$chr)
   outcome$pos<-as.character(outcome$pos)
   
@@ -148,10 +152,10 @@ for (i in 1:length(TL)){
 } 
 
 #save and add to report
-save(list_save, file = "//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Outputs/stroke_results.RData")
+save(list_save, file = paste0(output_dir, "test_results.RData"))
 
 # make report
 
 rmarkdown::render('C:/Users/am2609/Code/Reports/Main_report.Rmd',
-                  output_file = 'stroke_results.hmtl', 
-                  params=list(dataset="//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA/Outputs/stroke_results.RData"))
+                  output_file = paste0(output_dir,'test_results.html'), 
+                  params=list(dataset=paste0(output_dir, "test_results.RData")))

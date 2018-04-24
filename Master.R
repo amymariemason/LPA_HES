@@ -37,7 +37,7 @@ setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/Code/")
 
 # set log file 
 #errors and warning produced by each step will be logged to this file
-error_log <- "./errors.log" # alter this to change logfile name
+error_log <- "//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA_test_run/Outputs/errors.log" # alter this to change logfile name
 
 # wipe current log
 log_error <- file(error_log, open="wt")
@@ -58,17 +58,17 @@ assertthat::assert_that(sink.number(type="message")==2,msg="warning: sink not cl
 code_dir<-getwd()
 
 # this is the directory containing inputs/output/biobank input folders
-home_dir<- "//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress"
+home_dir<- "//me-filer1/home$/am2609/My Documents/Programs/MR Projects/LPA_test_run/"
 
 # this is the directory containing the Biobank source files for step1
 ### if running on cardio, symbolic links to these files can be found in 
-BB_dir<-paste0(home_dir, "/BB_input/")
+BB_dir<-"//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/BB_input/"
 
 # output file
-output_dir<-paste0(home_dir, "/Outputs/")
+output_dir<-paste0(home_dir, "Outputs/")
 
 #inputs file
-inputs_dir<-paste0(home_dir, "/Inputs/")
+inputs_dir<-paste0(home_dir, "Inputs/")
 
 
 
@@ -118,7 +118,7 @@ message(paste("Step 1 run on ", format(Sys.time(), "%a %b %d %X %Y")), "\n\n")
 
 
 # run the file line by line to ensure all errors are caught
-ll <- parse(file = "gwas_create_sample_file_step1.R")
+ll <- parse(file = "Step1.R")
 
 for (i in seq_along(ll)) {
   tryCatch(eval(ll[[i]]), 
@@ -147,7 +147,7 @@ sink(log_error, type=c("message"), append=TRUE)
 message(paste("Step 2 run on ", format(Sys.time(), "%a %b %d %X %Y")), "\n\n")
 
 # run the file line by line to ensure all errors are caught
-ll <- parse(file = "gwas_add_outcomes_step2_2.R")
+ll <- parse(file = "Step2.R")
 
 for (i in seq_along(ll)) {
   tryCatch(eval(ll[[i]]), 

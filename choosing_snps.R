@@ -9,7 +9,7 @@
 # programs
 #################################################################
 
-
+require("data.table")
 
 create_blank_file<- function(inputfile){
   
@@ -407,9 +407,9 @@ write.table(results, paste0(output_dir,"fstep_UKBB.txt"), row.names=F, quote=F, 
 
 
 d = data[,snps_selected]
-d1 = as.numeric(d[,1])
-d2 = as.numeric(d[,2])
-d3 = as.numeric(d[,3])
+d1 = as.numeric(d[,snps_selected[1]])
+d2 = as.numeric(d[,snps_selected[2]])
+d3 = as.numeric(d[,snps_selected[3]])
 d4 = as.numeric(d[,4])
 d5 = as.numeric(d[,5])
 d6 = as.numeric(d[,6])
@@ -434,6 +434,7 @@ d24 = as.numeric(d[,24])
 d25 = as.numeric(d[,25])
 d26 = as.numeric(d[,26])
 d27 = as.numeric(d[,27])
+y=as.numeric(data$ln_lpa)
 
 model.condall <- summary(lm(y ~ . + d1 + d2 + d3 + d4 + d5 + d6 + d7 + d8 + d9 + d10 + d11 + d12 +
                               d13 + d14 + d15 + d16 + d17 + d18 + d19 + d20 + d21 + d22 + d23 + d24 + d25 + d26 + d27 , data=c))

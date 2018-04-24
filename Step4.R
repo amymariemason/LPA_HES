@@ -25,7 +25,7 @@ data_rho_master <- read.table("LPA_master_dataset_pcs_EUwinsor_withoutM.txt", he
 # all snps associations with lpa
 lpa <- read.table("LPA_Variants_EUwinsor_withoutM.txt", sep="\t", header=T, colClasses="character")
 # list of variants
-fsteps <- read.table("fstep_UKBB_C4D_lpa.txt", sep="\t", header=T, colClasses="character")
+fsteps <- read.table(paste0(inputs_dir,"test_snps.txt"), sep="\t", header=T, colClasses="character")
 
 
 # subset associations to only required snps
