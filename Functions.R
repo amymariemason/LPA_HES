@@ -10,8 +10,9 @@ qctoolify <- function(table, chr=chr, pos=pos, filename){
   #filename is where the file should be saved
   ###################
   # this function creates a space seperated list of snps ready to use in qctool
-  table$output<-ifelse(as.numeric(table$chr)<10, paste0("0",table$chr,":", table$pos), paste0(table$chr,":", table$pos))
-  write.table(t(table$output),filename,sep=" ",row.names=FALSE, quote =FALSE, col.names=FALSE)
+  table$output<-ifelse(as.numeric(as.character(table$chr))<10, paste0("0",table$chr,":", table$pos), paste0(table$chr,":", table$pos))
+  table2<-t(table$output)
+  write.table(table2,filename,sep=" ",row.names=FALSE, quote =FALSE, col.names=FALSE)
 }
 
 

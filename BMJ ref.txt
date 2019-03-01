@@ -1,0 +1,104 @@
+BMJ review for  "25-hydroxyvitamin D and risk of osteoporotic fractures: observational
+and Mendelian randomisation analyses in two large population-based
+cohorts" on 28/11/18
+
+
+Summary
+
+This is an interesting result, but lacks important information that would allow the reader to evaluate the validity and significance of the result.
+
+The authors conducted a observation analysis on up to 36 years of fracture data compared to Plasma 25-hydroxyvitamin D concentrations and a Mendelian randomisation on 4 SNPs associations with Plasma 25-hydroxyvitamin D concentrations as their exposure and number of fractures as their outcome. In both cases, they make a good argument for having found no association between Plasma 25-hydroxyvitamin D concentration and fractures over time. 
+
+However, I have some major concerns over the choice of instruments in the MR analysis, which lead me to question the reliability of that part of the analysis. There is also no power calculation which makes it impossible to evaluate the significance of the result. 
+
+
+Major concerns
+
+1. Choice of variants. 
+
+The authors conducted a Mendelian randomisation on 4 SNPs associations with Plasma 25-hydroxyvitamin D concentrations as their exposure and number of fractures as their outcome.  The authors say Page 8, line 14: "We chose genetic variants...We on purpose did not genotype for variants in the vitamin D binding protein"
+
+Vitamin D papers (e.g. https://www.ncbi.nlm.nih.gov/pubmed/26305103) often include 4 variants with genome-wide significance from 4 loci (GC, DHCR7, CYP2R1, CYP24A1). The authors has chosen to use only two of these loci, presumably for the biological reasons quoted above, but to select two SNPs in each of these. The immediate concern is over the independence of these SNPs - D',r2 are 0.95, 0.51 and 1, 0.49 for a white British set for these respective pairs. Given the potentially high D' values, it is a concern that the additional variants at each loci will not add much power to the model while potentially confounding the result. Could the authors please include the D' and r2 values for their datasets. 
+
+ Given the authors are using a additive score counting the number of lowering alleles, it is of concern that two alleles from SNPs in high correlation are given the same value as two from more independent SNPs. 
+
+The authors repeat their analysis with only a single SNP from each loci and get similar results, with the only significant result (fracture of radius/ulna) intensified. I think this should be the primary analysis, as I cannot see the justification for including 2 additional SNPs. 
+
+
+What cut-off used to determine which variants were chosen? (presumably 5x 10^8). Were there any variants close to the cut-off considered and rejected? It is sensible to create a score conservatively based on biological rationale, but it would be helpful for the authors to fully explain their process in how these SNPs were selected. 
+Repeating the analysis with a more liberal score would reassure the reader that the choice of SNPs did not influence the results. 
+
+
+2. No power calculations
+
+The authors have found a null result in MR, but have provided no power calculation to direct the reader as to the strength of result they could have detected. This is frustrating as it makes it difficult to evaluate how significant the result is and, in particular, whether an effect the size predicted by the observational analysis was likely to be detected. 
+
+A power calculation for the MR analysis should be added to the genetic analysis on page 12.
+
+Related to this, the R2 value for the instrument strength is only given in Table 3. This, or the F-statistic, should be mentioned in the body of the paper as part of the power calculation as part of a discussion on weak instrument bias. 
+
+Similarly on page 12, line 38 it is reported that that association between fractures and plasma 25-hydroxyvitamin D largely vanishes in the when all-cause mortality is added as a competing risk. It would be useful to have a power calculation to contextualise what size of effect should have been detectable.
+
+
+
+
+1. There is no sensitivity analysis reported for the Mendelian Randomisation results.
+
+The authors conducted a Mendelian randomisation on 4 (arguably 2) SNPs associations with plasma 25-hydroxyvitamin D concentrations as their exposure and number of fractures as their outcome. As reported, this appears to be a very basic analysis with minimal sensitivity analysis or testing of the assumptions underlying MR. It is impossible to determine from the paper as written if this result is valid. 
+
+It is mentioned (Page 16, line 18) that potential limitations of the study is genetic pleiotropy, but none of the methods for detecting or adjusting for this have been reported. If the authors has more SNPS, I would expect them to do MR-Egger and weighted median regressions, but given the limited data this is unlikely to be helpful. However the authors should provide a plot of the SNP-outcome association against the SNP-exposure association, so that the reader can better judge the homogeneity of the causal effects. 
+
+It is unclear why the authors chose a simple additive model over a weighted model - does this choice cause any difference in the result?
+
+
+Other concerns
+
+
+1. Page 11, line 7 "Genetic analyses were adjusted for age, sex, and birth year, as
+genetic analyses generally are not prone to confounding". 
+
+The last part of this is not true. It is possible, for example, to induce collider bias by conditioning on a variable that is causal to both the exposure and the outcome.  Also, if genetic analyses are generally not prone to confounding, why adjust at all?
+
+The authors should add an explanation on why these variables were chosen to condition on. It is unclear if seasonal variation of 25-hydroxyvitamin D was included in the model - it is not mentioned here, but is mentioned in the description for figures S8 and S9. 
+
+Was any variable selection performed? Do the results persist if no adjustment is done? I am particularly concerned about the inclusion of both age and birth year - are they not highly correlated? Is this to capture the differences in assay results at the different time periods? If so, a single variable based on assay group might be more informative. 
+
+
+Page 7, lines 28-38
+It is unclear if multiple 25-hydroxyvitamin D results existed for Copenhagen City Heart Study group. If so, which result was used?
+
+
+
+Page 41/42
+2. Graph S7 and S8 should be combined, so that the score can be more easily compared with the individual snps. Potentially S9 could be added as well, although that might make the page too cluttered. 
+
+
+Supplementary tables
+
+It would be beneficial to see a table relating the number of fractures to the different allele scores in the raw data - similar to Figure 3, but for fracture numbers. 
+
+
+Page 10, line 53
+
+"Observational analyses were adjusted for age, sex, seasonal
+variation of 25-hydroxyvitamin D, birth year, weight, height, previous fracture at baseline, smoking
+status, rheumatoid arthritis at baseline, potentially osteoporotic related disorders at baseline (premature menopause, diabetes, cancer, chronic obstructive pulmonary disease, and ischemic heart
+disease), and alcohol consumption."
+
+Was any variable selection method used here? Are all variables reasonably uncorrelated?
+
+
+page 12, line 38 
+
+"low concentrations of 25-hydroxyvitamin D were largely not associated with
+increased risk of fractures"
+
+It would be useful for the authors to be more precise here -
+
+
+page 13, line 7
+
+Add the change in average number of fractures as well. 
+
+
+
