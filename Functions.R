@@ -155,13 +155,19 @@ import_data<-function(inputfile, inputname, varlist, varname=names(varlist)[[1]]
 
 # adds binary outcome column to match ordering of the .sample file
 
+output<-rep(NA, nrow(sample_all))
+output<-as.data.frame(output)
+
 extract_outcome<-function(sample_list, sample_id="ID_1", outcomefile, outcome, outcome_id="eid"){
   stopifnot(!is.null(outcomefile[,outcome]))
   stopifnot(!is.null(outcomefile[,outcome_id]))
   stopifnot(!is.null(sample_list[,sample_id]))
-  events<-which(outcomefile[,outcome]==1)
-  cases = unique(outcomefile[events,outcome_id])
-  output_temp = ifelse(as.numeric(sample_list[2:nrow(sample_list),sample_id])%in%cases, 1, 0)
+  events<-which(outcomefile[,outcome]=="1")
+  cases = unique(outcomefile[events,][[outcome_id]])
+  output_temp = ifelse(as.numeric(sample_list[2:nrow(sample_list),sample_id])%in%cases, "1", "0")
+  NAevents<-which(is.na(outcomefile[,outcome]))
+  missing = unique(outcomefile[NAevents,][[outcome_id]])
+  output_temp = ifelse(as.numeric(sample_list[2:nrow(sample_list),sample_id])%in%missing, "NA", output_temp)
   output_temp<-as.data.frame(output_temp)
   output_temp<-rbind("B", output_temp)
   names(output_temp)<-outcome

@@ -8,3 +8,5 @@
 *.db
 Reports/Reports - Shortcut.lnk
 Step5_other_outcomes.R
+.RData
+.RDataTmp
