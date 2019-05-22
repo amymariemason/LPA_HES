@@ -3,17 +3,25 @@
 ###################################################
 # Turn table of snps into qctool ready form 
 
-qctoolify <- function(table, chr=chr, pos=pos, filename){
+qctoolify <- function(table, chr="chr", pos="pos", filename){
   #table is the table of chromosomes and positions you want to extract
   #chr is the name of the column containing chromosone information (integrer)
   #pos is the name of the column containing position information
   #filename is where the file should be saved
   ###################
   # this function creates a space seperated list of snps ready to use in qctool
+  table_temp<-table
+  names(table)[names(table) == chr] <- "chr"
+  names(table)[names(table) == pos] <- "pos"
   table$output<-ifelse(as.numeric(as.character(table$chr))<10, paste0("0",table$chr,":", table$pos), paste0(table$chr,":", table$pos))
   table2<-t(table$output)
   write.table(table2,filename,sep=" ",row.names=FALSE, quote =FALSE, col.names=FALSE)
+  table <-table_temp
+  rm(table_temp)
 }
+
+# use this to rename columns if misbehaving
+library(tidyverse)
 
 
 ##########################################
@@ -154,7 +162,9 @@ import_data<-function(inputfile, inputname, varlist, varname=names(varlist)[[1]]
 #############################
 
 # adds binary outcome column to match ordering of the .sample file
-
+sample_all<- #ordered samplefile here
+wantedoutcomes<- # list of outcomes
+outcomefile<- #outcomefile here  
 output<-rep(NA, nrow(sample_all))
 output<-as.data.frame(output)
 
@@ -173,3 +183,11 @@ extract_outcome<-function(sample_list, sample_id="ID_1", outcomefile, outcome, o
   names(output_temp)<-outcome
   return(output_temp)
 }
+
+# apply in loop
+allframes = lapply(wanted_outcomes,
+                   function(x)extract_outcome(sample_list=sample_all, 
+                                              sample_id="ID_1", 
+                                              outcomefile=outcomes, 
+                                              outcome=x, 
+                                              outcome_id="n_eid"))

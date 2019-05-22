@@ -39,7 +39,7 @@ extract_outcome<-function(sample_list, sample_id="ID_1", outcomefile, outcome, o
   NAevents<-which(is.na(outcomefile[,outcome]))
   missing = unique(outcomefile[NAevents,][[outcome_id]])
   output_temp = ifelse(as.numeric(sample_list[2:nrow(sample_list),sample_id])%in%missing, "NA", output_temp)
-  output_temp<-as.data.frame(output_temp)
+  output_temp<-as.data.frame(output_temp, stringsAsFactors = F)
   output_temp<-rbind("B", output_temp)
   names(output_temp)<-outcome
   return(output_temp)
