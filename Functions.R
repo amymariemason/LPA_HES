@@ -22,7 +22,8 @@ qctoolify <- function(table, chr="chr", pos="pos", filename){
 
 # use this to rename columns if misbehaving
 library(tidyverse)
-
+alcohol_snps<-rename(alcohol_snps, pos=Position )
+alcohol_snps<-rename(alcohol_snps, chr=Chr)
 
 ##########################################
 # Functions

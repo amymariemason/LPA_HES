@@ -14,7 +14,7 @@
 #######################################################################
 
 # this should be the folder containing the biobank data or symbolic links to that data
-setwd(BB_dir)
+setwd("//me-filer1/home$/am2609/My Documents/Programs/GWAS_inprogress/BB_input/")
 
 #######################################################################
 # Load Biobank files 

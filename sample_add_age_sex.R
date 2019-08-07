@@ -9,7 +9,7 @@
 
 # inputs
 library(readr)
-samplefile <- read_table2("~/Stata_outcomes/april_2019_outcomes_v2.sample")
+samplefile <- april_2019_outcomes_v2
 samplelink <- read_table2("~/Programs/GWAS_inprogress/BB_input/sampleID_map.txt")
 age_sex <- read_csv("~/Stata_outcomes/age_sex.csv")
 
@@ -23,7 +23,7 @@ sample2<-sample2[order(sample2$id),]
 # replace ID_1
 sample2[,"ID_1"]<-sample2$Adiposity_sample_ID
 #remove unneeded columns
-sample2<-sample2[, !names(samplefile) %in% c("Adiposity_sample_ID", "BP_sample_ID")]
+sample2<-sample2[, !names(sample2) %in% c("Adiposity_sample_ID", "BP_sample_ID")]
 
 
 #### add age/sex/bmi
@@ -47,6 +47,6 @@ assertthat::are_equal(sample_out$id, sample_out$id2)
 sample_out<-sample_out[, !names(sample_out) %in% c("id", "exclude", "error_check","id2")]
 
 # save sample file
-write.table(sample_out,"~/Stata_outcomes/april_2019_outcomes_v3.sample", row.names=FALSE, quote=FALSE)
+write.table(sample_out,"~/Stata_outcomes/april_2019_ou.sample", row.names=FALSE, quote=FALSE)
 
 
