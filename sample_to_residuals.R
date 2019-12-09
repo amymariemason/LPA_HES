@@ -10,7 +10,9 @@
 
 #################### inputs
 library(readr)
+### load the .sample file with the outcomes
 april_2019_outcomes_v3 <- read_table2("~/Stata_outcomes/april_2019_outcomes_v3.sample")
+# load the list of european non-related samples
 QCed_Eur_unrelated <- read_csv("~/Programs/GWAS_inprogress/BB_input/QCed_Eur_unrelated.txt",col_names = FALSE)
 
 ################ outcomes of interest set to NA where not in non-related european
@@ -29,15 +31,37 @@ outcomes$dvt<-ifelse(outcomes$exclude==TRUE, NA, outcomes$dvt)
 
 ################ regression of covariates on outcome
 
-#outcomes_regress<-outcomes[2:nrow(outcomes),]
-#outcomes_regress
+# create new dataframe without the first row
+
+outcomes2<-outcomes[2:nrow(outcomes),]
+outcomes2$PC1<-as.numeric(outcomes2$PC1)
+outcomes2$PC2<-as.numeric(outcomes2$PC2)
+outcomes2$PC3<-as.numeric(outcomes2$PC3)
+outcomes2$PC4<-as.numeric(outcomes2$PC4)
+outcomes2$PC5<-as.numeric(outcomes2$PC5)
+outcomes2$PC6<-as.numeric(outcomes2$PC6)
+outcomes2$PC7<-as.numeric(outcomes2$PC7)
+outcomes2$PC8<-as.numeric(outcomes2$PC8)
+outcomes2$PC9<-as.numeric(outcomes2$PC9)
+outcomes2$PC10<-as.numeric(outcomes2$PC10)
+outcomes2$ages<-as.numeric(outcomes2$ages)
+outcomes2$sex<-as.factor(outcomes2$sex)
+outcomes2$vte<-as.factor(outcomes2$vte)
+outcomes2$dvt<-as.factor(outcomes2$dvt)
 
 
-#vtelogit <- glm(vte ~ ages + sex +PC1 +PC2 +PC3 +PC4 +PC5 +PC6 +PC7 +PC8 +PC9 +PC10, data = outcomes[outcomes$exclude==FALSE,], family = "binomial")
+# regress on vte
+vtelogit <- glm(vte ~ ages + sex +PC1 +PC2 +PC3 +PC4 +PC5 +PC6 +PC7 +PC8 +PC9 +PC10, data = outcomes2, family = "binomial", na.action=na.exclude)
+outcomes2$vte_res<-residuals.glm(vtelogit, type = "response")
+
+
 #dvtlogit <- glm(dvt ~ ages + sex +PC1 +PC2 +PC3 +PC4 +PC5 +PC6 +PC7 +PC8 +PC9 +PC10, data = outcomes[], family = "binomial")
 # DO REGREssion in stata COZ R is being a butt
 
-residuals_dvt_vte <- read_csv("~/Stata_outcomes/residuals_dvt_vte.csv", col_types = cols(id_2 = col_skip()))
+# (in actuality I cheated and used stata for dvt and vte, so the numbers may be slightly different)
+# via: glm vte ages sex pc*
+# predict res, response
+#residuals_dvt_vte <- read_csv("~/Stata_outcomes/residuals_dvt_vte.csv", col_types = cols(id_2 = col_skip()))
 
 outcomes$count<-1:nrow(outcomes)
 outcomes2<- merge(outcomes, residuals_dvt_vte, by.x="ID_1", by.y="id_1", all=TRUE)
